@@ -1,0 +1,299 @@
+
+// import React, { useState } from 'react';
+// import { Link, useParams } from 'react-router-dom';
+// import { useDispatch } from 'react-redux';
+// import { useGetProductByIdQuery } from '../features/api/authApi';
+// import { addItemToCart } from '../features/cart/cartSlice';
+// import toast from 'react-hot-toast';
+// import axios from 'axios';
+// import ReviewsDetail from '../pages/ReviewsDetail.js';
+
+// const ProductDetails = () => {
+//     const { id } = useParams();
+//     const { data: product, error, isLoading } = useGetProductByIdQuery(id);
+//     const [quantity, setQuantity] = useState(1);
+//     const dispatch = useDispatch();
+
+//     const handleAddToCart = async () => {
+//         if (product.Stock < 1) {
+//             return toast.error('Product is out of stock');
+//         }
+//         dispatch(addItemToCart({ ...product, quantity }));
+//         try {
+//             await axios.post(
+//                 'http://localhost:5000/api/cart',
+//                 { productId: product._id, quantity },
+//                 {
+//                     withCredentials: true, // Send cookies with request
+//                 }
+//             );
+//             toast.success('Item added to cart Data Base!');
+//         } catch (error) {
+//             console.error('Error adding to cart:', error.response ? error.response.data : error.message);
+//         }
+//     };
+
+//     const handleIncrement = () => {
+//         if (quantity < product.Stock) {
+//             setQuantity(prevQty => prevQty + 1);
+//         } else {
+//             toast.error('Cannot add more than available stock');
+//         }
+//     };
+
+//     const handleDecrement = () => {
+//         if (quantity > 1) {
+//             setQuantity(prevQty => prevQty - 1);
+//         }
+//     };
+
+//     if (isLoading) return <div className="text-center mt-20">Loading...</div>;
+//     if (error) return <div className="text-center text-red-500 mt-20">Error fetching product details.</div>;
+
+//     return (
+//         <div className="container mx-auto px-4 py-12">
+//             <div className="flex flex-col md:flex-row bg-white shadow-lg rounded-lg overflow-hidden">
+//                 {/* Product Image */}
+//                 <div className="md:w-1/2">
+//                     <img
+//                         src={`http://localhost:5000${product.image}`} 
+//                         alt={product.name}
+//                         className="w-full h-full object-cover hover:scale-104 transition-transform duration-300"
+//                     />
+//                 </div>
+
+//                 {/* Product Details */}
+//                 <div className="md:w-1/2 p-2">
+//                     <h2 className="text-4xl font-bold text-gray-800 mb-4">{product.name}</h2>
+//                     <p className="text-xl text-blue-600 mb-4">Price: ${product.price}</p>
+//                     <p className="text-gray-500 mb-4">Brand: {product.brand}</p>
+//                     <p className="text-gray-500 mb-4">Category: {product.category}</p>
+//                     <p className="text-gray-500 mb-4">Rating: {product.rating} / 5</p>
+//                     <p className="text-gray-500 mb-4">Number of Reviews: {product.numReviews}</p>
+//                     <p className="text-gray-700 mb-6">{product.description}</p>
+
+//                     {product.Stock > 0 ? (
+//                         <p className="text-green-500 font-semibold mb-4">In Stock</p>
+//                     ) : (
+//                         <p className="text-red-500 font-semibold mb-4">Out of Stock</p>
+//                     )}
+
+//                     {/* Quantity Selector */}
+//                     <div className="mt-4 flex items-center space-x-4">
+//                         <button
+//                             className="px-4 py-2 bg-gray-200 text-gray-700 font-bold rounded-l hover:bg-gray-300 transition"
+//                             onClick={handleDecrement}
+//                             disabled={quantity === 1}
+//                         >
+//                             -
+//                         </button>
+//                         <span className="px-4 py-2 bg-gray-100 text-gray-700 font-bold">{quantity}</span>
+//                         <button
+//                             className="px-4 py-2 bg-gray-200 text-gray-700 font-bold rounded-r hover:bg-gray-300 transition"
+//                             onClick={handleIncrement}
+//                             disabled={quantity === product.Stock}
+//                         >
+//                             +
+//                         </button>
+//                     </div>
+
+//                     {/* Add to Cart Button */}
+//                     <button
+//                         onClick={handleAddToCart}
+//                         disabled={product.Stock === 0}
+//                         className={`mt-6 px-6 py-3 font-bold text-white rounded-lg shadow-lg transition-all ${product.Stock === 0
+//                             ? 'bg-gray-400 cursor-not-allowed'
+//                             : 'bg-blue-600 hover:bg-blue-700'
+//                             }`}
+//                     >
+//                         Add to Cart
+//                     </button>
+
+//                     {/* Link to Reviews Page */}
+//                     <Link to={`/reviews/${id}`} className="block mt-6 text-blue-500 underline">
+//                         POST your Reviews
+//                     </Link>
+//                 </div>
+//             </div>
+
+//             {/* Display Reviews */}
+//             <ReviewsDetail productId={id} />     
+//      </div>
+//     );
+// };
+
+// export default ProductDetails;
+
+import React, { useState } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import { useGetProductByIdQuery } from '../features/api/authApi';
+import { useDispatch } from 'react-redux';
+import { addItemToCart } from '../features/cart/cartSlice';
+import toast from 'react-hot-toast';
+import ReviewsDetail from '../pages/ReviewsDetail.js';
+import Title from '../Layout/Title.js';
+
+const ProductDetails = () => {
+    const { id } = useParams();
+    const { data: product, error, isLoading } = useGetProductByIdQuery(id);
+    const [selectedImageIndex, setSelectedImageIndex] = useState(0); // State for selected image
+    const [quantity, setQuantity] = useState(1);
+    const [zoomPosition, setZoomPosition] = useState({ x: 100, y: 0 });
+    const [isZoomed, setIsZoomed] = useState(false);
+    const dispatch = useDispatch();
+
+    const handleAddToCart = async () => {
+        if (product.Stock < 1) {
+            return toast.error('Product is out of stock');
+        }
+        dispatch(addItemToCart({ ...product, quantity }));
+        toast.success('Item added to cart!');
+    };
+
+    const handleIncrement = () => {
+        if (quantity < product.Stock) {
+            setQuantity(prevQty => prevQty + 1);
+        } else {
+            toast.error('Cannot add more than available stock');
+        }
+    };
+
+    const handleDecrement = () => {
+        if (quantity > 1) {
+            setQuantity(prevQty => prevQty - 1);
+        }
+    };
+
+    const handleMouseMove = (e) => {
+        const rect = e.target.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        setZoomPosition({ x, y });
+    };
+
+    const handleMouseEnter = () => {
+        setIsZoomed(true);
+    };
+
+    const handleMouseLeave = () => {
+        setIsZoomed(false);
+    };
+
+    if (isLoading) return <div className="text-center mt-20">Loading...</div>;
+    if (error) return <div className="text-center text-red-500 mt-20">Error fetching product details.</div>;
+
+    return (
+        <div className="w-full px-4 py-12">  {/* Full-width and padded container */}
+           <Title title={"Products Details"}/>
+            <div className="flex flex-col md:flex-row bg-gray-500 shadow-lg rounded-lg overflow-hidden">
+                <div className="md:w-1/2 p-4 relative">
+                    {/* Display the selected image */}
+                    <img
+                        src={`http://localhost:5000${product.images[selectedImageIndex]}`}
+                        alt={product.name}
+                        className="w-full h-[500px] object-cover rounded-lg hover:scale-105 transition-transform duration-300"
+                        onMouseMove={handleMouseMove}
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
+                    />
+
+                    {/* Image Preview Thumbnails */}
+                    <div className="flex space-x-2 mt-4">
+                        {product.images.map((img, index) => (
+                            <img
+                                key={index}
+                                src={`http://localhost:5000${img}`}
+                                alt={`Preview ${index}`}
+                                className={`w-20 h-20 object-cover rounded-lg cursor-pointer transition-all duration-300 ease-in-out ${selectedImageIndex === index ? 'border-4 border-green-500' : ''}`}
+                                onClick={() => setSelectedImageIndex(index)}
+                            />
+                        ))}
+                    </div>
+                </div>
+
+                {/* Details Section */}
+                <div className="md:w-1/2 p-4 space-y-4">
+                    <h2 className="text-3xl font-semibold text-white">{product.name}</h2>
+                    <p className="text-lg text-white"><span className='text-2xl'>Price</span>: ${product.price}</p>
+                    <p className="text-white"><span className='text-2xl'>Brand</span>: {product.brand}</p>
+                    <p className="text-white"><span className='text-2xl'>Category</span>: {product.category}</p>
+                    <p className="text-white"><span className='text-2xl'>Rating</span>: {product.rating} / 5</p>
+                    <p className="text-white"><span className='text-2xl'>Number of Reviewers</span>: {product.numReviews}</p>
+                    <p className="text-white"><span className='text-2xl'>Description:</span> {product.description}</p>
+
+                    {product.Stock > 0 ? (
+                        <p className="text-green-400 font-medium">In Stock</p>
+                    ) : (
+                        <p className="text-red-500 font-medium">Out of Stock</p>
+                    )}
+
+                    {/* Quantity Selector */}
+                    <div className="flex items-center space-x-4">
+                        <button
+                            className="px-4 py-2 bg-red-600 text-lg text-gray-700 font-bold rounded-l hover:bg-gray-300 transition"
+                            onClick={handleDecrement}
+                            disabled={quantity === 1}
+                        >
+                            -
+                        </button>
+                        <span className="px-4 py-2 bg-gray-100 text-gray-700 font-semibold">{quantity}</span>
+                        <button
+                            className="px-4 py-2 bg-green-500 text-gray-900 font-semibold rounded-r hover:bg-gray-300 transition"
+                            onClick={handleIncrement}
+                            disabled={quantity === product.Stock}
+                        >
+                            +
+                        </button>
+                    </div>
+
+                    <button
+                        onClick={handleAddToCart}
+                        disabled={product.Stock === 0}
+                        className={`w-28 mt-4 px-6 py-3 font-bold text-white rounded-lg shadow-lg transition-all ${product.Stock === 0
+                            ? 'bg-gray-400 cursor-not-allowed'
+                            : 'bg-green-600 hover:bg-green-400'
+                            }`}
+                    >
+                        Add to Cart
+                    </button>
+                    <Link to="/cart" className='bg-blue-600 hover:bg-blue-400 ml-10 px-6 py-5 mb-10 font-bold text-white rounded-lg shadow-lg transition-all'>
+                        Go to Cart
+                    </Link>
+                </div>
+            </div>
+
+            {/* Zoomed Image Container */}
+            {isZoomed && (
+                <div
+                    className="fixed top-20 right-[5%] w-[500px] h-[400px] border-4 border-gray-300 overflow-hidden bg-white shadow-lg"
+                    style={{ marginLeft: '10px' }} // Margin to separate zoomed and original images
+                >
+                    <img
+                        src={`http://localhost:5000${product.images[selectedImageIndex]}`}
+                        alt="Zoomed"
+                        className="w-full h-full object-cover"
+                        style={{
+                            transform: `translate(-${zoomPosition.x}%, -${zoomPosition.y}%) scale(4.5)` // Slightly reduced scale
+                        }}
+                    />
+                </div>
+            )}
+
+            {/* Reviews Section */}
+            <div className="mt-12 space-y-8">
+                <div className="text-center">
+                    <Link
+                        to={`/reviews/${id}`}
+                        className="inline-block bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold shadow-lg transition"
+                    >
+                        POST Your Review
+                    </Link>
+                </div>
+                <h3 className="text-2xl font-semibold mb-4 text-gray-400">Reviews</h3>
+                <ReviewsDetail productId={id} />
+            </div>
+        </div>
+    );
+};
+
+export default ProductDetails;
