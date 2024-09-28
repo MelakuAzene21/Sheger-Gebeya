@@ -82,8 +82,8 @@ const multer = require('multer');
 const path = require('path');
 const router = express.Router();
 const { protect, admin } = require('../middleware/authMiddleware');
-const Product = require('../models/Product'); 
-// Set up multer for file storage
+
+const Product = require('../models/Product')
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -193,40 +193,6 @@ router.put('/:id', protect, admin, upload.single('image'), async (req, res) => {
         res.status(500).json({ message: 'Error updating product', error });
     }
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
