@@ -277,13 +277,46 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// routes/product.js
 
-// Configure multer for file uploads
+// GET related products by category
+router.get('/:id/related', async (req, res) => {
+    try {
+        const currentProduct = await Product.findById(req.params.id);
+        if (!currentProduct) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+
+        const relatedProducts = await Product.find({
+            category: currentProduct.category,
+            _id: { $ne: req.params.id } // Exclude the current product
+        }); // Limit the number of related products
+
+        res.status(200).json(relatedProducts);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching related products', error });
+    }
+});
 
 
+router.get('/:id/brand', async (req, res) => {
+    try {
+        const currentProduct1 = await Product.findById(req.params.id);
+        if (!currentProduct1) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
 
-// routes/product.js
+        const relatedProducts1 = await Product.find({
+            brand: currentProduct1.brand,
+            _id: { $ne: req.params.id } // Exclude the current product
+        }); // Limit the number of related products
+
+        res.status(200).json(relatedProducts1);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching related products', error });
+    }
+});
+
+
 
 // DELETE a product by ID
 router.delete('/:id',protect,admin, async (req, res) => {

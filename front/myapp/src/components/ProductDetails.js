@@ -121,10 +121,9 @@
 //      </div>
 //     );
 // };
-
 // export default ProductDetails;
 
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useGetProductByIdQuery } from '../features/api/authApi';
 import { useDispatch } from 'react-redux';
@@ -132,14 +131,21 @@ import { addItemToCart } from '../features/cart/cartSlice';
 import toast from 'react-hot-toast';
 import ReviewsDetail from '../pages/ReviewsDetail.js';
 import Title from '../Layout/Title.js';
+import { AiOutlineZoomIn, AiOutlineClose, AiOutlineHeart, AiFillHeart } from 'react-icons/ai'; // Add Heart Icons
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 
 const ProductDetails = () => {
     const { id } = useParams();
     const { data: product, error, isLoading } = useGetProductByIdQuery(id);
-    const [selectedImageIndex, setSelectedImageIndex] = useState(0); // State for selected image
+    const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const [quantity, setQuantity] = useState(1);
-    const [zoomPosition, setZoomPosition] = useState({ x: 100, y: 0 });
-    const [isZoomed, setIsZoomed] = useState(false);
+    const [relatedProducts, setRelatedProducts] = useState([]);
+    const [relatedProductBrand, setRelatedProductsBrand] = useState([]);
+
+    const [isFavorite, setIsFavorite] = useState(false); // State for favorite
+
+    const [isFullscreen, setIsFullscreen] = useState(false); // State for fullscreen mode
     const dispatch = useDispatch();
 
     const handleAddToCart = async () => {
@@ -152,7 +158,7 @@ const ProductDetails = () => {
 
     const handleIncrement = () => {
         if (quantity < product.Stock) {
-            setQuantity(prevQty => prevQty + 1);
+            setQuantity((prevQty) => prevQty + 1);
         } else {
             toast.error('Cannot add more than available stock');
         }
@@ -160,51 +166,124 @@ const ProductDetails = () => {
 
     const handleDecrement = () => {
         if (quantity > 1) {
-            setQuantity(prevQty => prevQty - 1);
+            setQuantity((prevQty) => prevQty - 1);
         }
     };
 
-    const handleMouseMove = (e) => {
-        const rect = e.target.getBoundingClientRect();
-        const x = ((e.clientX - rect.left) / rect.width) * 100;
-        const y = ((e.clientY - rect.top) / rect.height) * 100;
-        setZoomPosition({ x, y });
+    // Toggle fullscreen view
+    const toggleFullscreen = () => {
+        setIsFullscreen(!isFullscreen);
     };
 
-    const handleMouseEnter = () => {
-        setIsZoomed(true);
+
+    // Toggle favorite status
+    const toggleFavorite = () => {
+        setIsFavorite((prev) => !prev);
+        if (!isFavorite) {
+            toast.success('Added to favorites!');
+            // You can implement the API call here to save to the backend if needed.
+        } else {
+            toast.success('Removed from favorites!');
+            // You can implement the API call here to remove from favorites in the backend if needed.
+        }
     };
 
-    const handleMouseLeave = () => {
-        setIsZoomed(false);
-    };
+    useEffect(() => {
+        // Fetch related products based on the current product's category
+        const fetchRelatedProducts = async () => {
+            try {
+                const response = await fetch(`http://localhost:5000/api/products/${id}/related`);
+                const data = await response.json();
+                setRelatedProducts(data);
+            } catch (error) {
+                console.error('Error fetching related products:', error);
+            }
+        };
+
+        const fetchRelatedProductsBrand = async () => {
+            try {
+                const response = await fetch(`http://localhost:5000/api/products/${id}/brand`);
+                const data = await response.json();
+                setRelatedProductsBrand(data);
+            } catch (error) {
+                console.error('Error fetching related products:', error);
+            }
+        };
+
+
+        if (product) {
+            fetchRelatedProducts();
+            fetchRelatedProductsBrand();
+        }
+    }, [id, product]);
+
+    if (isLoading) return <Skeleton count={10} />;
+
+
+
+
 
     if (isLoading) return <div className="text-center mt-20">Loading...</div>;
     if (error) return <div className="text-center text-red-500 mt-20">Error fetching product details.</div>;
 
     return (
-        <div className="w-full px-4 py-12">  {/* Full-width and padded container */}
-           <Title title={"Products Details"}/>
+        <div className="w-full px-4 py-12">
+            <Title title={"Products Details"} />
             <div className="flex flex-col md:flex-row bg-gray-500 shadow-lg rounded-lg overflow-hidden">
                 <div className="md:w-1/2 p-4 relative">
-                    {/* Display the selected image */}
                     <img
                         src={`http://localhost:5000${product.images[selectedImageIndex]}`}
                         alt={product.name}
                         className="w-full h-[500px] object-cover rounded-lg hover:scale-105 transition-transform duration-300"
-                        onMouseMove={handleMouseMove}
-                        onMouseEnter={handleMouseEnter}
-                        onMouseLeave={handleMouseLeave}
                     />
 
-                    {/* Image Preview Thumbnails */}
+                    {/* Favorite Icon Button */}
+                    <button
+                        onClick={toggleFavorite}
+                        className="absolute bottom-40 right-4 p-2  rounded-full shadow-md hover:bg-gray-300"
+                    >
+                        {isFavorite ? (
+                            <AiFillHeart className="text-2xl text-red-700 bg-red-300" title='Remove from favorites' />
+                        ) : (
+                            <AiOutlineHeart className="text-2xl text-white" title='Add to favorites' />
+                        )}
+                    </button>
+
+
+
+                    {/* Zoom Icon Button */}
+                    <button
+                        onClick={toggleFullscreen}
+                        className="absolute bottom-28 right-4 p-2 bg-green-400 rounded-full shadow-md hover:bg-gray-300"
+                    >
+                        <AiOutlineZoomIn className="text-2xl text-gray-700" title='Zoom in'/>
+                    </button>
+
+                    {/* Fullscreen Image Modal */}
+                    {isFullscreen && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
+                            <button
+                                onClick={toggleFullscreen}
+                                className="absolute top-4 p-2 bg-white rounded-full shadow-md hover:bg-gray-300"
+                            >
+                                <AiOutlineClose className="text-2xl text-gray-700" />
+                            </button>
+                            <img
+                                src={`http://localhost:5000${product.images[selectedImageIndex]}`}
+                                alt="Fullscreen"
+                                className="w-auto h-full object-contain"
+                            />
+                        </div>
+                    )}
+
+                    {/* Image Previews */}
                     <div className="flex space-x-2 mt-4">
-                        {product.images.map((img, index) => (
+                        {product.images.map((image, index) => (
                             <img
                                 key={index}
-                                src={`http://localhost:5000${img}`}
-                                alt={`Preview ${index}`}
-                                className={`w-20 h-20 object-cover rounded-lg cursor-pointer transition-all duration-300 ease-in-out ${selectedImageIndex === index ? 'border-4 border-green-500' : ''}`}
+                                src={`http://localhost:5000${image}`}
+                                alt={`Preview ${index + 1}`}
+                                className={`w-20 h-20 object-cover cursor-pointer rounded-md ${index === selectedImageIndex ? 'ring-2 ring-blue-500' : ''}`}
                                 onClick={() => setSelectedImageIndex(index)}
                             />
                         ))}
@@ -262,23 +341,6 @@ const ProductDetails = () => {
                 </div>
             </div>
 
-            {/* Zoomed Image Container */}
-            {isZoomed && (
-                <div
-                    className="fixed top-20 right-[5%] w-[500px] h-[400px] border-4 border-gray-300 overflow-hidden bg-white shadow-lg"
-                    style={{ marginLeft: '10px' }} // Margin to separate zoomed and original images
-                >
-                    <img
-                        src={`http://localhost:5000${product.images[selectedImageIndex]}`}
-                        alt="Zoomed"
-                        className="w-full h-full object-cover"
-                        style={{
-                            transform: `translate(-${zoomPosition.x}%, -${zoomPosition.y}%) scale(4.5)` // Slightly reduced scale
-                        }}
-                    />
-                </div>
-            )}
-
             {/* Reviews Section */}
             <div className="mt-12 space-y-8">
                 <div className="text-center">
@@ -292,6 +354,68 @@ const ProductDetails = () => {
                 <h3 className="text-2xl font-semibold mb-4 text-gray-400">Reviews</h3>
                 <ReviewsDetail productId={id} />
             </div>
+
+
+            {/* Related Products */}
+            <div className="related-products mt-8">
+                <h3 className="text-xl font-semibold text-green-400 mb-4 italic border-l-8 border-spacing-2">Related Categogry Products</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {relatedProducts.map((relatedProduct) => (
+                        <div key={relatedProduct._id} className="bg-white border border-gray-200 rounded-lg shadow-lg">
+                            <img
+                                src={`http://localhost:5000${relatedProduct.images[0]}`}
+                                alt={relatedProduct.name}
+                                className="w-full h-48 object-cover"
+                            />
+                            <div className="p-4">
+                                <h2 className="text-lg font-semibold mb-2">{relatedProduct.name}</h2>
+                                <p className="text-gray-700 mb-4">${relatedProduct.price}</p>
+                                <Link
+                                    to={`/products/${relatedProduct._id}`}
+                                    className="text-blue-500 hover:underline"
+                                >
+                                    View Details
+                                </Link>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+
+
+
+
+            {/* Related Products */}
+            <div className="related-products mt-8">
+                <h3 className="text-xl font-semibold  mb-4 italic border-l-8 text-blue-600">Related Brand Products</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {relatedProductBrand.map((relatedProductBrand) => (
+                        <div key={relatedProductBrand._id} className="bg-white border border-gray-200 rounded-lg shadow-lg">
+                            <img
+                                src={`http://localhost:5000${relatedProductBrand.images[0]}`}
+                                alt={relatedProductBrand.name}
+                                className="w-full h-48 object-cover"
+                            />
+                            <div className="p-4">
+                                <h2 className="text-lg font-semibold mb-2">{relatedProductBrand.name}</h2>
+                                <p className="text-gray-700 mb-4">${relatedProductBrand.price}</p>
+                                <Link
+                                    to={`/products/${relatedProductBrand._id}`}
+                                    className="text-blue-500 hover:underline"
+                                >
+                                    View Details
+                                </Link>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+
+
+
+
         </div>
     );
 };
