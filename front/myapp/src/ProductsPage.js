@@ -241,6 +241,7 @@ const ProductsPage = () => {
                         />
                         <div className="p-4 bg-gray-500">
                             <h2 className="text-xl font-semibold mb-2 text-white">{product.name}</h2>
+                            <p className="text-white">{product.description}</p>
                             <p className="text-white mb-4"><del className='mr-3 text-yellow-300'>${product.price + 12}</del>${product.price}</p>
                             <Link
                                 to={`/products/${product._id}`}

@@ -147,7 +147,6 @@ const ProductDetails = () => {
 
     const [isFullscreen, setIsFullscreen] = useState(false); // State for fullscreen mode
     const dispatch = useDispatch();
-
     const handleAddToCart = async () => {
         if (product.Stock < 1) {
             return toast.error('Product is out of stock');
@@ -262,19 +261,43 @@ const ProductDetails = () => {
                     {/* Fullscreen Image Modal */}
                     {isFullscreen && (
                         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
+                            {/* Close Button */}
                             <button
-                                onClick={toggleFullscreen}
-                                className="absolute top-4 p-2 bg-white rounded-full shadow-md hover:bg-gray-300"
+                                onClick={() => setIsFullscreen(false)}
+                                className="absolute top-4  p-2 bg-white rounded-full shadow-md hover:bg-gray-300"
                             >
                                 <AiOutlineClose className="text-2xl text-gray-700" />
                             </button>
+
+                            {/* Left Navigation Button */}
+                            {selectedImageIndex > 0 && (
+                                <button
+                                    onClick={() => setSelectedImageIndex(selectedImageIndex - 1)}
+                                    className="absolute left-4 p-2 bg-white rounded-full shadow-md hover:bg-gray-300"
+                                >
+                                    <span className="text-2xl text-gray-700">{'<'}</span>
+                                </button>
+                            )}
+
+                            {/* Display the current image in fullscreen */}
                             <img
                                 src={`http://localhost:5000${product.images[selectedImageIndex]}`}
                                 alt="Fullscreen"
                                 className="w-auto h-full object-contain"
                             />
+
+                            {/* Right Navigation Button */}
+                            {selectedImageIndex < product.images.length - 1 && (
+                                <button
+                                    onClick={() => setSelectedImageIndex(selectedImageIndex + 1)}
+                                    className="absolute right-4 p-2 bg-white rounded-full shadow-md hover:bg-gray-300"
+                                >
+                                    <span className="text-2xl text-gray-700">{'>'}</span>
+                                </button>
+                            )}
                         </div>
                     )}
+
 
                     {/* Image Previews */}
                     <div className="flex space-x-2 mt-4">
@@ -356,6 +379,23 @@ const ProductDetails = () => {
             </div>
 
 
+           {/* Specifications Section */}
+{product.specifications && product.specifications.length > 0 && (
+    <div className="mt-6 p-6 bg-gray-500 rounded-lg shadow-lg mx-auto max-w-md">
+        <h3 className="text-2xl font-semibold text-green-400 mb-4 text-center">Specifications</h3>
+        <ul className="list-none space-y-2 ">
+            {product.specifications.map((spec) => (
+                <li key={spec._id} className="text-white">
+                    <span className="font-semibold font-serif ">{spec.name}:</span>   <span className="font-normal italic">{spec.value}</span>
+                </li>
+            ))}
+        </ul>
+    </div>
+)}
+
+
+
+
             {/* Related Products */}
             <div className="related-products mt-8">
                 <h3 className="text-xl font-semibold text-green-400 mb-4 italic border-l-8 border-spacing-2">Related Categogry Products</h3>
@@ -369,6 +409,8 @@ const ProductDetails = () => {
                             />
                             <div className="p-4">
                                 <h2 className="text-lg font-semibold mb-2">{relatedProduct.name}</h2>
+                                <p className="text-gray-700 mb-4">${relatedProduct.description}</p>
+
                                 <p className="text-gray-700 mb-4">${relatedProduct.price}</p>
                                 <Link
                                     to={`/products/${relatedProduct._id}`}
@@ -399,6 +441,8 @@ const ProductDetails = () => {
                             />
                             <div className="p-4">
                                 <h2 className="text-lg font-semibold mb-2">{relatedProductBrand.name}</h2>
+                                <p className="text-gray-700 mb-4">${relatedProductBrand.description}</p>
+
                                 <p className="text-gray-700 mb-4">${relatedProductBrand.price}</p>
                                 <Link
                                     to={`/products/${relatedProductBrand._id}`}

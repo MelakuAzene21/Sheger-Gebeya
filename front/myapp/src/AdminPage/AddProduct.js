@@ -179,6 +179,8 @@ const AddProduct = () => {
         rating: '',
         numReviews: '',
         images: [],
+        specifications: [{ name: '', value: '' }]
+
     };
 
     const [formData, setFormData] = useState(initialFormData);
@@ -226,25 +228,43 @@ const AddProduct = () => {
                 formData.images.forEach((image) => {
                     newProduct.append('images', image);
                 });
+            } else if (key === 'specifications') {
+                newProduct.append('specifications', JSON.stringify(formData.specifications));
             } else {
                 newProduct.append(key, formData[key]);
             }
         });
 
+        // Submit the product
         try {
             await addProduct(newProduct).unwrap();
             toast.success('Product added successfully!');
             setFormData(initialFormData);
             setImagePreviews([]);
+            setMainImageIndex(0); // Reset main image index if necessary
         } catch (error) {
-            console.error('Failed to add product:', error);
             toast.error('Error adding product');
         }
     };
 
+
     const handlePreviewClick = (index) => {
         setMainImageIndex(index);
     };
+
+    const handleSpecificationChange = (index, field, value) => {
+        const updatedSpecifications = [...formData.specifications];
+        updatedSpecifications[index][field] = value;
+        setFormData({ ...formData, specifications: updatedSpecifications });
+    };
+
+    const addSpecificationField = () => {
+        setFormData({
+            ...formData,
+            specifications: [...formData.specifications, { name: '', value: '' }]
+        });
+    };
+
 
     return (
         <div className="max-w-md mx-auto mt-10">
@@ -372,6 +392,36 @@ const AddProduct = () => {
                             </div>
                         </div>
                     )}
+                </div>
+                <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">Specifications</label>
+                    {formData.specifications.map((spec, index) => (
+                        <div key={index} className="flex gap-2 mb-2">
+                            <input
+                                type="text"
+                                placeholder="Specification Name"
+                                value={spec.name}
+                                onChange={(e) => handleSpecificationChange(index, 'name', e.target.value)}
+                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
+                                required
+                            />
+                            <input
+                                type="text"
+                                placeholder="Specification Value"
+                                value={spec.value}
+                                onChange={(e) => handleSpecificationChange(index, 'value', e.target.value)}
+                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
+                                required
+                            />
+                        </div>
+                    ))}
+                    <button
+                        type="button"
+                        onClick={addSpecificationField}
+                        className="text-blue-500 hover:underline"
+                    >
+                        + Add another specification
+                    </button>
                 </div>
 
                 <button

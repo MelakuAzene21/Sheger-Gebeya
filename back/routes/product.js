@@ -128,7 +128,8 @@ router.post('/add', protect, admin, upload.array('images', 5), async (req, res) 
             category,
             Stock,
             rating,
-            numReviews
+            numReviews,
+            specifications
         } = req.body;
 
         // If no files are uploaded, return an error
@@ -139,6 +140,7 @@ router.post('/add', protect, admin, upload.array('images', 5), async (req, res) 
         // Save all uploaded image paths to an array
         // Fix: Use template literals for the correct image paths
         const images = req.files.map(file => `/uploads/${file.filename}`);
+        const parsedSpecifications = JSON.parse(specifications);
 
         const newProduct = new Product({
             name,
@@ -149,7 +151,9 @@ router.post('/add', protect, admin, upload.array('images', 5), async (req, res) 
             category,
             Stock,
             rating,
-            numReviews
+            numReviews,
+            specifications: parsedSpecifications // Save parsed specifications
+
         });
 
         const savedProduct = await newProduct.save();

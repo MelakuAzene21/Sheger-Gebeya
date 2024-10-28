@@ -51,6 +51,12 @@ const productSchema = mongoose.Schema(
            
             default: 0,
         },
+        specifications: [
+            {
+                name: { type: String, required: true },
+                value: { type: String, required: true }
+            }
+        ],
          user: {
              type: mongoose.Schema.Types.ObjectId,
              required:false,
