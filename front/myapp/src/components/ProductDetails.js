@@ -239,7 +239,7 @@ const ProductDetails = () => {
                     {/* Favorite Icon Button */}
                     <button
                         onClick={toggleFavorite}
-                        className="absolute bottom-40 right-4 p-2  rounded-full shadow-md hover:bg-gray-300"
+                        className="absolute bottom-48 right-4 p-2  rounded-full shadow-md hover:bg-gray-300"
                     >
                         {isFavorite ? (
                             <AiFillHeart className="text-2xl text-red-700 bg-red-300" title='Remove from favorites' />
@@ -253,7 +253,7 @@ const ProductDetails = () => {
                     {/* Zoom Icon Button */}
                     <button
                         onClick={toggleFullscreen}
-                        className="absolute bottom-28 right-4 p-2 bg-green-400 rounded-full shadow-md hover:bg-gray-300"
+                        className="absolute bottom-36 right-4 p-2 bg-green-400 rounded-full shadow-md hover:bg-gray-300"
                     >
                         <AiOutlineZoomIn className="text-2xl text-gray-700" title='Zoom in'/>
                     </button>

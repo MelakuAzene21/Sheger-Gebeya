@@ -229,7 +229,7 @@ router.get('/', async (req, res) => {
 });
 router.get('/item', async (req, res) => {
     const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 10;
+    const limit = Number(req.query.limit) || 9;
     const skip = (page - 1) * limit;
 
     const keyword = req.query.keyword ? {
@@ -241,7 +241,13 @@ router.get('/item', async (req, res) => {
 
     const { category, brand, minPrice, maxPrice, inStock } = req.query;
     let filter = { ...keyword };
-    if (brand) filter.brand = brand
+
+    if (brand) {
+        filter.brand = {
+            $regex: brand,
+            $options: 'i' // Case-insensitive search
+        };
+    }
     if (category) filter.category = category;
     if (minPrice || maxPrice) {
         filter.price = {};
@@ -264,8 +270,8 @@ router.get('/item', async (req, res) => {
         currentPage: page,
         totalPages: Math.ceil(totalProducts / limit),
     });
-}
-)
+});
+
 // routes/product.js
 
 // GET a single product by ID
