@@ -134,7 +134,7 @@ import Title from '../Layout/Title.js';
 import { AiOutlineZoomIn, AiOutlineClose, AiOutlineHeart, AiFillHeart } from 'react-icons/ai'; // Add Heart Icons
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
-
+import axios from 'axios';
 const ProductDetails = () => {
     const { id } = useParams();
     const { data: product, error, isLoading } = useGetProductByIdQuery(id);
@@ -142,6 +142,9 @@ const ProductDetails = () => {
     const [quantity, setQuantity] = useState(1);
     const [relatedProducts, setRelatedProducts] = useState([]);
     const [relatedProductBrand, setRelatedProductsBrand] = useState([]);
+    const [reviews, setReviews] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [err, setError] = useState(null);
 
     const [isFavorite, setIsFavorite] = useState(false); // State for favorite
 
@@ -188,6 +191,25 @@ const ProductDetails = () => {
     };
 
     useEffect(() => {
+        const fetchReviews = async () => {
+            try {
+                const response = await axios.get(`http://localhost:5000/api/products/${id}/reviews`, {
+                    withCredentials: true
+                });
+                setReviews(response.data);
+                setLoading(false);
+            } catch (err) {
+                setError('Failed to fetch reviews');
+                setLoading(false);
+            }
+        };
+
+        fetchReviews();
+    }, [id]);
+
+
+
+    useEffect(() => {
         // Fetch related products based on the current product's category
         const fetchRelatedProducts = async () => {
             try {
@@ -216,15 +238,16 @@ const ProductDetails = () => {
         }
     }, [id, product]);
 
-    if (isLoading) return <Skeleton count={10} />;
-
-
-
-
-
+    if (isLoading) return <Skeleton count={10} />
     if (isLoading) return <div className="text-center mt-20">Loading...</div>;
     if (error) return <div className="text-center text-red-500 mt-20">Error fetching product details.</div>;
+    if (loading) {
+        return <p className="text-center text-gray-500">Loading reviews...</p>;
+    }
 
+    if (err) {
+        return <p className="text-center text-red-500">{error}</p>;
+    }
     return (
         <div className="w-full px-4 py-12">
             <Title title={"Products Details"} />
@@ -316,7 +339,7 @@ const ProductDetails = () => {
                 {/* Details Section */}
                 <div className="md:w-1/2 p-4 space-y-4">
                     <h2 className="text-3xl font-semibold text-white">{product.name}</h2>
-                    <p className="text-lg text-white"><span className='text-2xl'>Price</span>: ${product.price}</p>
+                    <p className="text-lg text-white"><span className='text-2xl'>Price</span>: {product.price} ETB</p>
                     <p className="text-white"><span className='text-2xl'>Brand</span>: {product.brand}</p>
                     <p className="text-white"><span className='text-2xl'>Category</span>: {product.category}</p>
                     <p className="text-white"><span className='text-2xl'>Rating</span>: {product.rating} / 5</p>
@@ -358,7 +381,7 @@ const ProductDetails = () => {
                     >
                         Add to Cart
                     </button>
-                    <Link to="/cart" className='bg-blue-600 hover:bg-blue-400 ml-10 px-6 py-5 mb-10 font-bold text-white rounded-lg shadow-lg transition-all'>
+                    <Link to="/cart" className='bg-blue-600 hover:bg-blue-400 ml-10 px-6 py-6  font-bold text-white rounded-lg shadow-lg transition-all'>
                         Go to Cart
                     </Link>
                 </div>
@@ -374,8 +397,14 @@ const ProductDetails = () => {
                         POST Your Review
                     </Link>
                 </div>
-                <h3 className="text-2xl font-semibold mb-4 text-gray-400">Reviews</h3>
-                <ReviewsDetail productId={id} />
+                {/* Conditionally display Reviews section */}
+                {reviews.length > 0 && (
+                    <>
+                        <h3 className="text-2xl font-semibold mb-4 text-gray-400">Reviews</h3>
+                        <ReviewsDetail productId={id} />
+                      </>
+
+                                                       )}
             </div>
 
 
@@ -396,65 +425,81 @@ const ProductDetails = () => {
 
 
 
-            {/* Related Products */}
-            <div className="related-products mt-8">
-                <h3 className="text-xl font-semibold text-green-400 mb-4 italic border-l-8 border-spacing-2">Related Categogry Products</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {relatedProducts.map((relatedProduct) => (
-                        <div key={relatedProduct._id} className="bg-white border border-gray-200 rounded-lg shadow-lg">
-                            <img
-                                src={`http://localhost:5000${relatedProduct.images[0]}`}
-                                alt={relatedProduct.name}
-                                className="w-full h-48 object-cover"
-                            />
-                            <div className="p-4">
-                                <h2 className="text-lg font-semibold mb-2">{relatedProduct.name}</h2>
-                                <p className="text-gray-700 mb-4">${relatedProduct.description}</p>
-
-                                <p className="text-gray-700 mb-4">${relatedProduct.price}</p>
-                                <Link
-                                    to={`/products/${relatedProduct._id}`}
-                                    className="text-blue-500 hover:underline"
-                                >
-                                    View Details
-                                </Link>
+            {/* Related Products by Category */}
+            {relatedProducts && relatedProducts.length > 0 && (
+                <div className="related-products mt-8">
+                    <h3 className="text-xl font-semibold text-green-400 mb-4 italic border-l-8 border-spacing-2">
+                        Related Category Products
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {relatedProducts.map((relatedProduct) => (
+                            <div
+                                key={relatedProduct._id}
+                                className="bg-white border border-gray-200 rounded-lg shadow-lg"
+                            >
+                                <img
+                                    src={`http://localhost:5000${relatedProduct.images[0]}`}
+                                    alt={relatedProduct.name}
+                                    className="w-full h-48 object-cover"
+                                />
+                                <div className="p-4">
+                                    <h2 className="text-lg font-semibold mb-2">
+                                        {relatedProduct.name}
+                                    </h2>
+                                    <p className="text-gray-700 mb-4">{relatedProduct.description}</p>
+                                    <span className="text-yellow-300 line-through mr-2">{relatedProduct.price + 12}</span>
+                                    <p className="text-blue-600 mb-4">{relatedProduct.price}  ETB</p>
+                                    <Link
+                                        to={`/products/${relatedProduct._id}`}
+                                        className="block w-full text-center text-white bg-blue-600 rounded-lg py-2 hover:bg-blue-500 transition-all"
+                                    >
+                                        View Details
+                                    </Link>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
-            </div>
+            )}
 
+            {/* Related Products by Brand */}
+            {relatedProductBrand && relatedProductBrand.length > 0 && (
+                <div className="related-products mt-8">
+                    <h3 className="text-xl font-semibold mb-4 italic border-l-8 text-blue-600">
+                        Related Brand Products
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {relatedProductBrand.map((relatedProductBrand) => (
+                            <div
+                                key={relatedProductBrand._id}
+                                className="bg-white border border-gray-200 rounded-lg shadow-lg"
+                            >
+                                <img
+                                    src={`http://localhost:5000${relatedProductBrand.images[0]}`}
+                                    alt={relatedProductBrand.name}
+                                    className="w-full h-48 object-cover"
+                                />
+                                <div className="p-4">
+                                    <h2 className="text-lg font-semibold mb-2">
+                                        {relatedProductBrand.name}
+                                    </h2>
+                                    <p className="text-gray-700 mb-4">{relatedProductBrand.description}</p>
+                                    <span className="text-yellow-300 line-through mr-2">{relatedProductBrand.price + 12}</span>
 
+                                    <p className="text-blue-600 mb-4">{relatedProductBrand.price}  ETB</p>
+                                    <Link
+                                        to={`/products/${relatedProductBrand._id}`}
+                                        className="block w-full text-center text-white bg-blue-600 rounded-lg py-2 hover:bg-blue-500 transition-all"
 
-
-
-            {/* Related Products */}
-            <div className="related-products mt-8">
-                <h3 className="text-xl font-semibold  mb-4 italic border-l-8 text-blue-600">Related Brand Products</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {relatedProductBrand.map((relatedProductBrand) => (
-                        <div key={relatedProductBrand._id} className="bg-white border border-gray-200 rounded-lg shadow-lg">
-                            <img
-                                src={`http://localhost:5000${relatedProductBrand.images[0]}`}
-                                alt={relatedProductBrand.name}
-                                className="w-full h-48 object-cover"
-                            />
-                            <div className="p-4">
-                                <h2 className="text-lg font-semibold mb-2">{relatedProductBrand.name}</h2>
-                                <p className="text-gray-700 mb-4">${relatedProductBrand.description}</p>
-
-                                <p className="text-gray-700 mb-4">${relatedProductBrand.price}</p>
-                                <Link
-                                    to={`/products/${relatedProductBrand._id}`}
-                                    className="text-blue-500 hover:underline"
-                                >
-                                    View Details
-                                </Link>
+                                    >
+                                        View Details
+                                    </Link>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
-            </div>
+            )}
 
 
 

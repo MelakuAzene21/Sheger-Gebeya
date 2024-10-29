@@ -411,11 +411,11 @@ const ProductsPage = () => {
                                 className="w-full h-48 object-cover"
                             />
                             <div className="p-4 ">
-                                <h2 className="text-2xl font-bold text-white mb-2">{product.name}</h2>
+                                <h2 className="text-2xl font-bold text-black mb-2">{product.name}</h2>
                                 <p className="text-gray-800 mb-4">{product.description}</p>
-                                <p className="text-white mb-4">
-                                    <span className="text-yellow-300 line-through mr-2">${product.price + 12}</span>
-                                    <span className="text-blue-600  mr-2">${product.price}</span>
+                                <p className=" mb-4">
+                                    <span className="text-yellow-300 line-through mr-2 font-extrabold">{product.price + 12}  ETB</span>
+                                    <p className="text-blue-600  mr-2">{product.price}  ETB</p>
                                 </p>
                                 <Link
                                     to={`/products/${product._id}`}

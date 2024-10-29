@@ -1,48 +1,72 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from 'react-icons/fa';
+import { FaFacebook, FaTwitter, FaInstagram, FaYoutube } from 'react-icons/fa';
 
 const Footer = () => {
     return (
-        <footer className="bg-gray-900 text-white py-10 mb-0 sticky w-full">
-            <div className="w-full px-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {/* About Section */}
+        <footer className="bg-gray-900 text-white py-10 w-full">
+            <div className="w-full px-6 md:px-16">
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                    {/* Store Location Section */}
                     <div>
-                        <h4 className="text-lg font-semibold mb-4 italic">About Us</h4>
-                        <p className="text-lg italic">
-                            We provide the best products to meet your needs. Our commitment to quality ensures your satisfaction.
+                        <h4 className="text-lg font-semibold mb-4 italic">Store Location</h4>
+                        <p className="text-sm">
+                            Addis Abeba ,Ethiopia<br />
+                           Bole, B 8
                         </p>
+                        <p className="text-sm mt-2">melakuazene623@gmail.com</p>
+                        <p className="text-sm mt-2">(251) 918219856</p>
+                        <div className="flex space-x-4 mt-4">
+                            <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-400 transition">
+                                <FaFacebook size={20} />
+                            </a>
+                            <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-400 transition">
+                                <FaInstagram size={20} />
+                            </a>
+                            <a href="https://www.twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-400 transition">
+                                <FaTwitter size={20} />
+                            </a>
+                            <a href="https://www.youtube.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-400 transition">
+                                <FaYoutube size={20} />
+                            </a>
+                        </div>
                     </div>
 
-                    {/* Quick Links Section */}
+                    {/* Shop Section */}
                     <div>
-                        <h4 className="text-lg font-semibold mb-4 italic">Quick Links</h4>
-                        <ul className="text-sm space-y-2 italic">
-                            <li><Link to="/" className="hover:text-gray-600 transition text-lg">Home</Link></li>
-                            <li><Link to="/cart" className="hover:text-gray-600 transition text-lg">Shop</Link></li>
-                            <li><Link to="/about" className="hover:text-gray-600 transition text-lg">About</Link></li>
-                            <li><Link to="/contact" className="hover:text-gray-600 transition text-lg">Contact</Link></li>
+                        <h4 className="text-lg font-semibold mb-4 italic">Shop</h4>
+                        <ul className="text-sm space-y-2">
+                            <li><Link to="/shop/all" className="hover:text-gray-400 transition">Shop All</Link></li>
+                            <li><Link to="/shop/computers" className="hover:text-gray-400 transition">Computers</Link></li>
+                            <li><Link to="/shop/tablets" className="hover:text-gray-400 transition">Tablets</Link></li>
+                            <li><Link to="/shop/drones-cameras" className="hover:text-gray-400 transition">Drones & Cameras</Link></li>
+                            <li><Link to="/shop/audio" className="hover:text-gray-400 transition">Audio</Link></li>
+                            <li><Link to="/shop/mobile" className="hover:text-gray-400 transition">Mobile</Link></li>
+                            <li><Link to="/shop/tv-home-cinema" className="hover:text-gray-400 transition">TV & Home Cinema</Link></li>
+                            <li><Link to="/shop/wearable-tech" className="hover:text-gray-400 transition">Wearable Tech</Link></li>
+                            <li><Link to="/shop/sale" className="hover:text-gray-400 transition">Sale</Link></li>
                         </ul>
                     </div>
 
-                    {/* Social Media Section */}
+                    {/* Customer Support Section */}
                     <div>
-                        <h4 className="text-lg font-semibold mb-4">Follow Us</h4>
-                        <div className="flex space-x-6">
-                            <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-400 transition">
-                                <FaFacebook size={24} />
-                            </a>
-                            <a href="https://www.twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-400 transition">
-                                <FaTwitter size={24} />
-                            </a>
-                            <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-400 transition">
-                                <FaInstagram size={24} />
-                            </a>
-                            <a href="https://www.linkedin.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-400 transition">
-                                <FaLinkedin size={24} />
-                            </a>
-                        </div>
+                        <h4 className="text-lg font-semibold mb-4 italic">Customer Support</h4>
+                        <ul className="text-sm space-y-2">
+                            <li><Link to="/contact" className="hover:text-gray-400 transition">Contact Us</Link></li>
+                            <li><Link to="/support/help-center" className="hover:text-gray-400 transition">Help Center</Link></li>
+                            <li><Link to="/about" className="hover:text-gray-400 transition">About Us</Link></li>
+                        </ul>
+                    </div>
+
+                    {/* Policy Section */}
+                    <div>
+                        <h4 className="text-lg font-semibold mb-4 italic">Policy</h4>
+                        <ul className="text-sm space-y-2">
+                            <li><Link to="/policy/shipping-returns" className="hover:text-gray-400 transition">Shipping & Returns</Link></li>
+                            <li><Link to="/policy/terms-conditions" className="hover:text-gray-400 transition">Terms & Conditions</Link></li>
+                            <li><Link to="/policy/payment-methods" className="hover:text-gray-400 transition">Payment Methods</Link></li>
+                            <li><Link to="/faq" className="hover:text-gray-400 transition">FAQ</Link></li>
+                        </ul>
                     </div>
                 </div>
 

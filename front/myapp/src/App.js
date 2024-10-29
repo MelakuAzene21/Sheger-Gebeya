@@ -33,6 +33,12 @@ import Footer from './Layout/Footer.js';
 import OrderConfirmation from './Order/OrderConfirmation.js';
 import ForgotPassword from './AuthPage/ForgotPassword.js';
 import ResetPassword from './AuthPage/ResetPassword.js';
+import About from './Layout/About.js'
+import Contact from './Layout/Contact.js';
+import FAQ from './Layout/FAQ.js'
+import ShippingAndReturn from './Layout/ShippingAndReturn.js'
+import TermsAndConditions from './Layout/TermsAndConditions.js'
+import PaymentMethod2 from './Layout/PaymentMethod.js';
 function App() {
   const dispatch=useDispatch();
   const {data:user}=useGetCurrentUserQuery();
@@ -67,7 +73,13 @@ function App() {
             
              <Route path="/reviewProduct/:productId" element={<ReviewsDetail />} />
              <Route path="/forgot-password" element={<ForgotPassword />} />
-            
+             <Route path="/about" element={<About />} />
+             <Route path="/contact" element={<Contact />} />
+             <Route path="/faq" element={<FAQ />} />
+             <Route path='policy/shipping-returns' element={<ShippingAndReturn/>}/>
+             <Route path='policy/terms-conditions' element={<TermsAndConditions />} />
+             <Route path='policy/payment-methods' element={<PaymentMethod2 />} />
+
              <Route path="/reset-password/:token" element={<ResetPassword />} />
 
           <Route path="/products/:id" element={<ProductDetails />} />
