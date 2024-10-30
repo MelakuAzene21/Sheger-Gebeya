@@ -165,12 +165,6 @@ router.post('/add', protect, admin, upload.array('images', 5), async (req, res) 
 });
 
 
-
-
-
-
-
-
 // Update product route
 router.put('/:id', protect, admin, upload.single('image'), async (req, res) => {
     try {
@@ -197,25 +191,6 @@ router.put('/:id', protect, admin, upload.single('image'), async (req, res) => {
         res.status(500).json({ message: 'Error updating product', error });
     }
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 // GET all products
@@ -272,7 +247,22 @@ router.get('/item', async (req, res) => {
     });
 });
 
-// routes/product.js
+// GET random products for carousel
+router.get('/random', async (req, res) => {
+    try {
+        const limit = parseInt(req.query.limit) || 5;
+
+        const randomProducts = await Product.aggregate([
+            { $sample: { size: limit } }
+        ]);
+
+        res.status(200).json(randomProducts);
+    } catch (error) {
+        console.error('Error fetching random products:', error.message); // Log specific error message
+        res.status(500).json({ message: 'Error fetching random products', error: error.message });
+    }
+});
+
 
 // GET a single product by ID
 router.get('/:id', async (req, res) => {
@@ -286,6 +276,8 @@ router.get('/:id', async (req, res) => {
         res.status(500).json({ message: 'Error fetching product', error });
     }
 });
+
+
 
 
 // GET related products by category
