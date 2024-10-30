@@ -32,7 +32,7 @@ const Footer = () => {
                         </div>
                     </div>
 
-                    {/* Shop Section */}
+                    {/* Shop Section
                     <div>
                         <h4 className="text-lg font-semibold mb-4 italic">Shop</h4>
                         <ul className="text-sm space-y-2">
@@ -46,15 +46,15 @@ const Footer = () => {
                             <li><Link to="/shop/wearable-tech" className="hover:text-gray-400 transition">Wearable Tech</Link></li>
                             <li><Link to="/shop/sale" className="hover:text-gray-400 transition">Sale</Link></li>
                         </ul>
-                    </div>
+                    </div> */}
 
                     {/* Customer Support Section */}
                     <div>
                         <h4 className="text-lg font-semibold mb-4 italic">Customer Support</h4>
                         <ul className="text-sm space-y-2">
-                            <li><Link to="/contact" className="hover:text-gray-400 transition">Contact Us</Link></li>
-                            <li><Link to="/support/help-center" className="hover:text-gray-400 transition">Help Center</Link></li>
-                            <li><Link to="/about" className="hover:text-gray-400 transition">About Us</Link></li>
+                            <li><Link to="/contact" className="hover:text-green-400 transition">Contact Us</Link></li>
+                            <li><Link to="/support/question" className="hover:text-green-400 transition">Customer Questions</Link></li>
+                            <li><Link to="/about" className="hover:text-green-400 transition">About Us</Link></li>
                         </ul>
                     </div>
 
@@ -62,10 +62,10 @@ const Footer = () => {
                     <div>
                         <h4 className="text-lg font-semibold mb-4 italic">Policy</h4>
                         <ul className="text-sm space-y-2">
-                            <li><Link to="/policy/shipping-returns" className="hover:text-gray-400 transition">Shipping & Returns</Link></li>
-                            <li><Link to="/policy/terms-conditions" className="hover:text-gray-400 transition">Terms & Conditions</Link></li>
-                            <li><Link to="/policy/payment-methods" className="hover:text-gray-400 transition">Payment Methods</Link></li>
-                            <li><Link to="/faq" className="hover:text-gray-400 transition">FAQ</Link></li>
+                            <li><Link to="/policy/shipping-returns" className="hover:text-blue-400 transition">Shipping & Returns</Link></li>
+                            <li><Link to="/policy/terms-conditions" className="hover:text-blue-600 transition">Terms & Conditions</Link></li>
+                            <li><Link to="/policy/payment-methods" className="hover:text-blue-600 transition">Payment Methods</Link></li>
+                            <li><Link to="/faq" className="hover:text-blue-600 transition">FAQ</Link></li>
                         </ul>
                     </div>
                 </div>

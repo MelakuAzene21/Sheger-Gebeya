@@ -126,6 +126,7 @@
 import React, { useState,useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useGetProductByIdQuery } from '../features/api/authApi';
+import { useGetCurrentUserQuery } from '../features/api/authApi';
 import { useDispatch } from 'react-redux';
 import { addItemToCart } from '../features/cart/cartSlice';
 import toast from 'react-hot-toast';
@@ -138,6 +139,7 @@ import axios from 'axios';
 const ProductDetails = () => {
     const { id } = useParams();
     const { data: product, error, isLoading } = useGetProductByIdQuery(id);
+
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const [quantity, setQuantity] = useState(1);
     const [relatedProducts, setRelatedProducts] = useState([]);
@@ -145,11 +147,62 @@ const ProductDetails = () => {
     const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
     const [err, setError] = useState(null);
-
-    const [isFavorite, setIsFavorite] = useState(false); // State for favorite
-
     const [isFullscreen, setIsFullscreen] = useState(false); // State for fullscreen mode
     const dispatch = useDispatch();
+
+    const { data: user, error: userError, isLoading: userLoading } = useGetCurrentUserQuery(); // Fetch current user info
+    const [isFavorite, setIsFavorite] = useState(false);
+
+    // // Fetch and update favorite status on load
+    // useEffect(() => {
+    //     const checkFavoriteStatus = async (userId) => {
+    //         try {
+    //             const response = await fetch(`http://localhost:5000/api/favorites/${userId}/${id}`, { method: 'GET' });
+    //             if (response.ok) {
+    //                 const data = await response.json();
+    //                 setIsFavorite(data.length > 0); // Assuming it returns an array of favorites
+    //             } else {
+    //                 setIsFavorite(false); // No favorites found
+    //             }
+    //         } catch (error) {
+    //             console.error('Failed to fetch favorite status', error);
+    //         }
+    //     };
+
+    //     // Only check the favorite status if the user is defined
+    //     if (user) {
+    //         checkFavoriteStatus(user._id); // Use user ID to check status
+    //     }
+    // }, [id, user]); // Run effect when `id` or `user` changes
+
+    // // Toggle favorite status
+    // const toggleFavorite = async () => {
+    //     if (!user) {
+    //         toast.error('You need to log in to manage favorites.');
+    //         return; // Exit if the user is not logged in
+    //     }
+
+    //     try {
+    //         const response = await fetch(`http://localhost:5000/api/favorites/${user._id}/${id}`, {
+    //             method: isFavorite ? 'DELETE' : 'POST',
+    //             headers: { 'Content-Type': 'application/json' },
+    //             body: JSON.stringify({ userId: user._id }) // Send user ID in the body
+    //         });
+
+    //         if (!response.ok) throw new Error('Failed to update favorite status');
+
+    //         setIsFavorite((prev) => !prev);
+    //         toast.success(isFavorite ? 'Removed from favorites!' : 'Added to favorites!');
+    //     } catch (error) {
+    //         toast.error('Failed to update favorites');
+    //         console.error('Error updating favorite status:', error);
+    //     }
+    // };
+
+    // if (userLoading) return <div>Loading user data...</div>;
+    // if (userError) return <div>Error loading user data.</div>;
+
+
     const handleAddToCart = async () => {
         if (product.Stock < 1) {
             return toast.error('Product is out of stock');
@@ -177,18 +230,6 @@ const ProductDetails = () => {
         setIsFullscreen(!isFullscreen);
     };
 
-
-    // Toggle favorite status
-    const toggleFavorite = () => {
-        setIsFavorite((prev) => !prev);
-        if (!isFavorite) {
-            toast.success('Added to favorites!');
-            // You can implement the API call here to save to the backend if needed.
-        } else {
-            toast.success('Removed from favorites!');
-            // You can implement the API call here to remove from favorites in the backend if needed.
-        }
-    };
 
     useEffect(() => {
         const fetchReviews = async () => {
@@ -238,6 +279,82 @@ const ProductDetails = () => {
         }
     }, [id, product]);
 
+
+    // Fetch and update favorite status on load
+    useEffect(() => {
+        const checkFavoriteStatus = async (userId) => {
+            try {
+                const response = await fetch(`http://localhost:5000/api/favorites/${userId}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    // Check if the current item ID is in the user's favorites
+                    setIsFavorite(data.some(favorite => favorite.itemId === id)); // Assuming the favorite model includes itemId
+                } else {
+                    setIsFavorite(false); // No favorites found
+                }
+            } catch (error) {
+                console.error('Failed to fetch favorite status', error);
+            }
+        };
+
+        // Only check the favorite status if the user is defined
+        if (user) {
+            checkFavoriteStatus(user._id); // Use user ID to check status
+        }
+    }, [id, user]); // Run effect when `id` or `user` changes
+
+
+
+
+    // Fetch and update favorite status on load
+    useEffect(() => {
+        const checkFavoriteStatus = async (userId) => {
+            try {
+                const response = await fetch(`http://localhost:5000/api/favorites/${userId}/${id}`, { method: 'GET' });
+                if (response.ok) {
+                    const data = await response.json();
+                    setIsFavorite(data.length > 0); // Assuming it returns an array of favorites
+                } else {
+                    setIsFavorite(false); // No favorites found
+                }
+            } catch (error) {
+                console.error('Failed to fetch favorite status', error);
+            }
+        };
+
+        // Only check the favorite status if the user is defined
+        if (user) {
+            checkFavoriteStatus(user._id); // Use user ID to check status
+        }
+    }, [id, user]); // Run effect when `id` or `user` changes
+
+    // Toggle favorite status
+    const toggleFavorite = async () => {
+        if (!user) {
+            toast.error('You need to log in to manage favorites.');
+            return; // Exit if the user is not logged in
+        }
+
+        try {
+            const response = await fetch(`http://localhost:5000/api/favorites/${user._id}/${id}`, {
+                method: isFavorite ? 'DELETE' : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: user._id }) // Send user ID in the body
+            });
+
+            if (!response.ok) throw new Error('Failed to update favorite status');
+
+            setIsFavorite((prev) => !prev);
+            toast.success(isFavorite ? 'Removed from favorites!' : 'Added to favorites!');
+        } catch (error) {
+            toast.error('Failed to update favorites');
+            console.error('Error updating favorite status:', error);
+        }
+    };
+
+    if (userLoading) return <div>Loading user data...</div>;
+    if (userError) return <div>Error loading user data.</div>;
+    
     if (isLoading) return <Skeleton count={10} />
     if (isLoading) return <div className="text-center mt-20">Loading...</div>;
     if (error) return <div className="text-center text-red-500 mt-20">Error fetching product details.</div>;
@@ -262,6 +379,8 @@ const ProductDetails = () => {
                     {/* Favorite Icon Button */}
                     <button
                         onClick={toggleFavorite}
+                        // {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
+
                         className="absolute bottom-48 right-4 p-2  rounded-full shadow-md hover:bg-gray-300"
                     >
                         {isFavorite ? (

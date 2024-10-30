@@ -405,11 +405,13 @@ const ProductsPage = () => {
                             key={product._id}
                             className="bg-white border border-gray-300 rounded-lg shadow-xl overflow-hidden transform transition-all hover:scale-105"
                         >
+                            <Link to={`/products/${product._id}`} >                           
                             <img
                                 src={`http://localhost:5000${product.images[0]}`}
                                 alt={product.name}
                                 className="w-full h-48 object-cover"
                             />
+                            </Link> 
                             <div className="p-4 ">
                                 <h2 className="text-2xl font-bold text-black mb-2">{product.name}</h2>
                                 <p className="text-gray-800 mb-4">{product.description}</p>

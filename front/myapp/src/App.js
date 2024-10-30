@@ -39,6 +39,7 @@ import FAQ from './Layout/FAQ.js'
 import ShippingAndReturn from './Layout/ShippingAndReturn.js'
 import TermsAndConditions from './Layout/TermsAndConditions.js'
 import PaymentMethod2 from './Layout/PaymentMethod.js';
+import CustomerMessage from './Layout/CustomerMessage.js'
 function App() {
   const dispatch=useDispatch();
   const {data:user}=useGetCurrentUserQuery();
@@ -76,9 +77,10 @@ function App() {
              <Route path="/about" element={<About />} />
              <Route path="/contact" element={<Contact />} />
              <Route path="/faq" element={<FAQ />} />
-             <Route path='policy/shipping-returns' element={<ShippingAndReturn/>}/>
-             <Route path='policy/terms-conditions' element={<TermsAndConditions />} />
-             <Route path='policy/payment-methods' element={<PaymentMethod2 />} />
+             <Route path='/policy/shipping-returns' element={<ShippingAndReturn/>}/>
+             <Route path='/policy/terms-conditions' element={<TermsAndConditions />} />
+             <Route path='/policy/payment-methods' element={<PaymentMethod2 />} />
+             <Route path='/support/question' element={<CustomerMessage />} />
 
              <Route path="/reset-password/:token" element={<ResetPassword />} />
 
