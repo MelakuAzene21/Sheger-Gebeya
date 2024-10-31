@@ -318,7 +318,6 @@ const ProductsPage = () => {
     useEffect(() => {
         refetch();
     }, [category, refetch]);
-    console.log('setCategory:', setCategory);
 
     if (isLoading) return <Skeleton count={20} />;
     if (error) return <div className="text-center text-red-500">Error fetching products</div>;

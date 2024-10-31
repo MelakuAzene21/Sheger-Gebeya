@@ -2,18 +2,7 @@
 const Order = require('../models/orderModel');
 const Cart = require('../models/cartModel');
 const Product = require('../models/Product');
-// const axios = require('axios');
-// const { signTeleBirrRequest } = require('../utils/teleBirrUtils');
-// @desc    Create new order
-// @route   POST /api/orders
-// @access  Private
-// const {
-//     TELEBIRR_MERCHANT_APP_ID,
-//     TELEBIRR_FABRIC_APP_ID,
-//     TELEBIRR_SHORTCODE,
-//     TELEBIRR_APP_SECRET,
-//     TELEBIRR_PRIVATE_KEY
-// } = process.env;
+
 
 const addOrderItems = async (req, res) => {
     const {
@@ -25,9 +14,8 @@ const addOrderItems = async (req, res) => {
         totalPrice,
     } = req.body;
 
-    const cart = await Cart.findOne({ user: req.user._id }).populate('items.product', 'name price image Stock');
+    const cart = await Cart.findOne({ user: req.user._id }).populate('items.product', 'name price images Stock');
 
-    console.log('Cart for user:', req.user._id, cart);
 
  
     if ( !cart||cart.items.length === 0) {
@@ -40,9 +28,9 @@ const addOrderItems = async (req, res) => {
         name: item.product.name,
         qty: item.quantity,
         price: item.product.price,
-        image: item.product.image,
+        images: item.product.images,
     }));
-
+ 
     // Verify stock
     for (const item of cart.items) {
         const product = await Product.findById(item.product._id);
@@ -52,6 +40,8 @@ const addOrderItems = async (req, res) => {
         product.Stock -= item.quantity;
         await product.save() 
     }
+
+
 
     const order = new Order({
         user: req.user._id,
@@ -70,53 +60,10 @@ const addOrderItems = async (req, res) => {
     await cart.save();
 
     return res.status(201).json(createdOrder)
-    //below
-    // const paymentData = {
-    //     outTradeNo: createdOrder._id,
-    //     subject: 'Order Payment',
-    //     totalAmount: totalPrice,
-    //     merchantAppId: TELEBIRR_MERCHANT_APP_ID,
-    //     notifyUrl: 'http://localhost:5000/api/telebirr-notify',
-    //     shortCode: TELEBIRR_SHORTCODE,
-    //     timeoutExpress: '15m',
-    //     nonceStr: Date.now().toString(),
-    // };
-
-    // const sign = signTeleBirrRequest(paymentData, TELEBIRR_PRIVATE_KEY);
-    // const telebirrRequestData = {
-    //     ...paymentData,
-    //     sign,
-    //     appSecret: TELEBIRR_APP_SECRET,
-    // };
-
-    // try {
-    //     const telebirrResponse = await axios.post('https://api.telebirr.com/payments/pay', telebirrRequestData);
-    //     res.status(201).json({ order: createdOrder, telebirrPayment: telebirrResponse.data });
-    // } catch (error) {
-    //     console.error('TeleBirr payment failed:', error);
-    //     res.status(500).json('Payment failed');
-//     // }
-// };
-
-// const teleBirrNotify = async (req, res) => {
-//     const { outTradeNo, tradeStatus } = req.body;
-
-//     if (tradeStatus === 'TRADE_SUCCESS') {
-//         const order = await Order.findById(outTradeNo);
-//         if (order) {
-//             order.isPaid = true;
-//             order.paidAt = Date.now();
-//             await order.save();
-//             return res.status(200).json('Payment successful');
-//         }
-//     }
-//     res.status(400).json('Payment failed');
+    
 };
 
- //above
- // @desc    Get order by ID
-// @route   GET /api/orders/:id
-// @access  Private
+ 
 const getOrderById = async (req, res) => {
     const order = await Order.findById(req.params.id).populate('user', 'name email');
 
@@ -257,7 +204,7 @@ const updateOrder = async (req, res) => {
                 name: item.name,
                 qty: item.qty,
                 price: item.price,
-                image: item.image,
+                images: item.images,
             }));
             order.orderItems = updatedOrderItems;
         }

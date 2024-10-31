@@ -14,7 +14,8 @@ const Signup = () => {
         password: '',
     });
 
-    const [errors, setErrors] = useState({}); // State for storing validation errors
+    const [errors, setErrors] = useState({}); // State for validation errors
+    const [serverError, setServerError] = useState(''); // State for server error message
 
     const handleChange = (e) => {
         setFormData({
@@ -30,7 +31,6 @@ const Signup = () => {
             newErrors.name = 'Name is required.';
         }
 
-        // Basic email validation regex
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(formData.email)) {
             newErrors.email = 'Please enter a valid email address.';
@@ -45,25 +45,33 @@ const Signup = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setServerError(''); // Clear previous server error
         const validationErrors = validateForm();
         if (Object.keys(validationErrors).length > 0) {
-            setErrors(validationErrors); // Set errors if validation fails
+            setErrors(validationErrors);
             return;
         }
 
         try {
-            await signup(formData).unwrap(); // Call the signup mutation
-            navigate('/login'); // Redirect to login on success
+            await signup(formData).unwrap();
+            navigate('/login');
         } catch (error) {
-            console.error('Signup failed:', error);
+            if (error.data && error.data.message === 'User already exists') {
+                setServerError('An account with this email already exists. Please try logging in.');
+            } else {
+                setServerError('Signup failed. Please try again later.');
+            }
         }
     };
 
     return (
         <div className="flex justify-center items-center h-screen bg-gradient-to-r from-blue-500 to-green-500">
-            <Title title={"Register Pages"}/>
+            <Title title={"Register Page"} />
             <form className="bg-white p-6 rounded shadow-md" onSubmit={handleSubmit}>
                 <h2 className="text-2xl font-bold mb-4">Signup</h2>
+
+                {/* Display server error */}
+                {serverError && <p className="text-red-500 mb-4">{serverError}</p>}
 
                 {/* Display validation errors */}
                 {errors.name && <p className="text-red-500 mb-2">{errors.name}</p>}
@@ -103,8 +111,9 @@ const Signup = () => {
                     Signup
                 </button>
 
-                <p className="font-bold">Already Have Account?
-                    <Link to="/login" className="text-blue-500 font-serif">Login</Link>
+                <p className="font-bold mt-4">
+                    Already have an account?
+                    <Link to="/login" className="text-blue-500 font-serif"> Login</Link>
                 </p>
             </form>
         </div>

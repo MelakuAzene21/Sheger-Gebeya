@@ -98,7 +98,31 @@ const Navbar = () => {
 
                 {user ? (
                     <>
-                        <span className="mr-4 text-blue-400">Welcome, {user.name || user.email}!</span>
+                        <span className="mr-4 flex items-center text-blue-400">
+                            <Link to="/profile" title=  {user.name} className="flex items-center space-x-2">
+                                {/* User profile image or default icon */}
+                                {user.image ? (
+                                    <img
+                                        src={user.image}
+                                        alt="User profile"
+                                        className="w-8 h-8 rounded-full" // Adjust size as needed
+                                    />
+                                ) : (
+                                    // Default SVG icon
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="w-8 h-8 rounded-full bg-gray-200 text-gray-500"
+                                        fill="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path d="M12 12c2.75 0 5-2.25 5-5s-2.25-5-5-5-5 2.25-5 5 2.25 5 5 5zm0 2c-3.33 0-10 1.67-10 5v3h20v-3c0-3.33-6.67-5-10-5z" />
+                                    </svg>
+                                )}
+
+                                {/* User name or email */}
+                                {/* <span>{user.name || user.email}</span> */}
+                            </Link>
+                        </span>
+
                         <button
                             onClick={handleLogout}
                             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"

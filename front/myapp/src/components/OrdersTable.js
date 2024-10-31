@@ -83,19 +83,33 @@ const OrdersTable = () => {
         if (error?.status === 404) {
             // Display a friendly message if there are no orders (404)
             return (
-                <div className="flex flex-col items-center my-10 mt-28">
+                <div
+                    className="flex flex-col items-center my-10 p-10 rounded-lg shadow-md min-h-[300px]"
+                    style={{
+                        backgroundImage: "linear-gradient(to right, #D1C4E9, #BBDEFB)", // Add background gradient
+                        backgroundColor: "#BBDEFB", // Fallback solid color
+                        border: "1px solid #ccc",  // Optional: Adds border to show component boundaries
+                    }}
+                >
                     <img
                         src="/images/no-orders.png"
                         alt="No orders"
-                        className="w-1/3 mb-4"
+                        className="w-1/4 mb-6"
                     />
-                    <Typography variant="h6" className="text-gray-600 text-center">
-                        You have not placed any orders yet.
+                    <Typography variant="h6" className="text-gray-700 font-semibold mb-4 text-center">
+                        Looks like you haven't placed any orders yet!
                     </Typography>
-                    <Link to={'/'} className='bg-blue-300 text-black px-4 py-5 rounded hover:bg-blue-600 transition-colors duration-300'>
+                    <Typography className="text-gray-500 mb-6 text-center">
+                        Ready to discover our amazing products? Start your shopping journey now!
+                    </Typography>
+                    <Link
+                        to={'/'}
+                        className="bg-gradient-to-r from-blue-500 to-green-500 text-white px-6 py-3 rounded-full font-semibold shadow-lg hover:from-blue-600 hover:to-green-600 transition-all duration-300 ease-in-out"
+                    >
                         Start Shopping
-                    </Link >
+                    </Link>
                 </div>
+
             );
         } else {
             // Display general error message for other errors
@@ -110,19 +124,26 @@ const OrdersTable = () => {
     // Check if there are no orders
     if (!orders || orders.length === 0) {
         return (
-            <div className="flex flex-col items-center my-10">
+            <div className="flex flex-col items-center my-10 p-10 bg-gradient-to-r from-purple-200 to-blue-100 rounded-lg shadow-md">
                 <img
                     src="/images/no-orders.png"
                     alt="No orders"
-                    className="w-1/3 mb-4"
+                    className="w-1/4 mb-6"
                 />
-                <Typography variant="h6" className="text-gray-600 text-center">
-                    You have not placed any orders yet.
+                <Typography variant="h6" className="text-gray-700 font-semibold mb-4 text-center">
+                    Looks like you haven't placed any orders yet!
                 </Typography>
-                <Link to={'/'} className='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors duration-300'>
+                <Typography className="text-gray-500 mb-6 text-center">
+                    Ready to discover our amazing products? Start your shopping journey now!
+                </Typography>
+                <Link
+                    to={'/'}
+                    className="bg-gradient-to-r from-blue-500 to-green-500 text-white px-6 py-3 rounded-full font-semibold shadow-lg hover:from-blue-600 hover:to-green-600 transition-all duration-300 ease-in-out"
+                >
                     Start Shopping
-                </Link >
+                </Link>
             </div>
+
         );
     }
 
@@ -150,7 +171,7 @@ const OrdersTable = () => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {orders.map((order) => (
+                    {orders?.map((order) => (
                         <TableRow key={order._id}>
                             <TableCell>{order._id}</TableCell>
                             <TableCell>${order.totalPrice.toFixed(2)}</TableCell>

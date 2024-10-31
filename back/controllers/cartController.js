@@ -6,13 +6,14 @@ const Product = require('../models/Product');
 // @route   GET /api/cart
 // @access  Private
 const getCart = async (req, res) => {
-    let cart = await Cart.findOne({ user: req.user._id }).populate('items.product', 'name price brand category image');
+    let cart = await Cart.findOne({ user: req.user._id }).populate('items.product', 'name price brand category images');
+    console.log(JSON.stringify(cart.items, null, 2)); // Indents the output for readability
 
     if (!cart) {
         cart = await Cart.create({ user: req.user._id, items: [] });
     }
 
-    res.json(cart);
+  res.json(cart); 
 };
 
 // @desc    Add item to cart

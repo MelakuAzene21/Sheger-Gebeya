@@ -53,7 +53,11 @@ const OrderDetails = () => {
                     {order.orderItems.map((item) => (
                         <div key={item.product} className="flex items-center justify-between py-4">
                             <div className="flex items-center space-x-4">
-                                <img src={`http://localhost:5000${item.images[0]}`} alt={item.name} className="w-16 h-16 rounded-lg object-cover" />
+                                <img
+                                    src={`http://localhost:5000${item.images[0]}`}
+                                    alt={item.name}
+                                    className="w-16 h-16 rounded-lg object-cover"
+                                />
                                 <div>
                                     <p className="text-gray-700 font-semibold">{item.name}</p>
                                     <p className="text-gray-500">${item.price} x {item.qty}</p>
@@ -64,6 +68,7 @@ const OrderDetails = () => {
                     ))}
                 </div>
             </div>
+
         </div>
     );
 };
