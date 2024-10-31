@@ -41,7 +41,7 @@
 
 
 import React from 'react';
-
+import Title from './Title'
 const PaymentMethods = () => {
     // Replace these URLs with the actual URLs of the images you'd like to use
     const paymentOptions = [
@@ -53,6 +53,8 @@ const PaymentMethods = () => {
 
     return (
         <div className="bg-gray-50 py-12">
+            <Title title='Payment Methods' />
+
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">Payment Methods</h2>
                 <p className="text-center text-gray-600 mb-8">

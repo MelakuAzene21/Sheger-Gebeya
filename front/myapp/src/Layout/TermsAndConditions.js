@@ -1,11 +1,11 @@
 import React from 'react';
-
+import Title from './Title'
 const TermsAndConditions = () => {
     return (
         <div className="bg-gray-50 min-h-screen py-16 px-4 lg:px-8">
             <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-lg">
                 <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">Terms and Conditions</h1>
-
+                <Title title='Terms and Condition'/>
                 {/* Intro Section */}
                 <div className="mb-6">
                     <p className="text-gray-700">

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
-
+import Title from './Title'
 const FAQ = () => {
     const [activeIndex, setActiveIndex] = useState(null);
 
@@ -37,6 +37,7 @@ const FAQ = () => {
                 <h2 className="text-4xl font-bold text-gray-800 mb-8">Frequently Asked Questions</h2>
                 <p className="text-gray-600 mb-12">Find answers to common questions about our products, shipping, returns, and more.</p>
             </div>
+            <Title title='Frequently Asked Question' />
 
             <div className="max-w-3xl mx-auto space-y-4">
                 {faqs.map((faq, index) => (

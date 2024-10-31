@@ -124,6 +124,7 @@
 // export default ProductDetails;
 
 import React, { useState,useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useParams, Link } from 'react-router-dom';
 import { useGetProductByIdQuery } from '../features/api/authApi';
 import { useGetCurrentUserQuery } from '../features/api/authApi';
@@ -150,9 +151,9 @@ const ProductDetails = () => {
     const [isFullscreen, setIsFullscreen] = useState(false); // State for fullscreen mode
     const dispatch = useDispatch();
 
-    const { data: user, error: userError, isLoading: userLoading } = useGetCurrentUserQuery(); // Fetch current user info
+    const { data: user } = useGetCurrentUserQuery(); // Fetch current user info
     const [isFavorite, setIsFavorite] = useState(false);
-
+  const navigate=useNavigate();
     // // Fetch and update favorite status on load
     // useEffect(() => {
     //     const checkFavoriteStatus = async (userId) => {
@@ -331,29 +332,29 @@ const ProductDetails = () => {
     // Toggle favorite status
     const toggleFavorite = async () => {
         if (!user) {
+              navigate('/login');
             toast.error('You need to log in to manage favorites.');
             return; // Exit if the user is not logged in
         }
 
         try {
             const response = await fetch(`http://localhost:5000/api/favorites/${user._id}/${id}`, {
-                method: isFavorite ? 'DELETE' : 'POST',
+                method:'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId: user._id }) // Send user ID in the body
             });
 
             if (!response.ok) throw new Error('Failed to update favorite status');
-
-            setIsFavorite((prev) => !prev);
-            toast.success(isFavorite ? 'Removed from favorites!' : 'Added to favorites!');
+            const message = await response.json();
+            setIsFavorite((prev) => !prev); // Toggle the state
+            toast.success(message.message); // Show success message based on backend response
         } catch (error) {
             toast.error('Failed to update favorites');
             console.error('Error updating favorite status:', error);
         }
     };
 
-    if (userLoading) return <div>Loading user data...</div>;
-    if (userError) return <div>Error loading user data.</div>;
+   
     
     if (isLoading) return <Skeleton count={10} />
     if (isLoading) return <div className="text-center mt-20">Loading...</div>;
@@ -376,19 +377,24 @@ const ProductDetails = () => {
                         className="w-full h-[500px] object-cover rounded-lg hover:scale-105 transition-transform duration-300"
                     />
 
-                    {/* Favorite Icon Button */}
                     <button
                         onClick={toggleFavorite}
-                        // {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
-
-                        className="absolute bottom-48 right-4 p-2  rounded-full shadow-md hover:bg-gray-300"
+                        className={`absolute bottom-48 right-4 p-2 rounded-full shadow-md ${isFavorite ? 'bg-red-300' : 'bg-white'
+                            } hover:bg-gray-300 transition duration-300`}
                     >
                         {isFavorite ? (
-                            <AiFillHeart className="text-2xl text-red-700 bg-red-300" title='Remove from favorites' />
+                            <AiFillHeart
+                                className="text-2xl text-gray-500"
+                                title="Remove from favorites" // Title for favorited state
+                            />
                         ) : (
-                            <AiOutlineHeart className="text-2xl text-white" title='Add to favorites' />
+                            <AiOutlineHeart
+                                    className="text-2xl  text-red-700"
+                                title="Add to favorites" // Title for non-favorited state
+                            />
                         )}
                     </button>
+
 
 
 

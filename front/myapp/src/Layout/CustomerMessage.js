@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-
+import Title from './Title'
 const Messages = () => {
     const [messages, setMessages] = useState([]);
 
@@ -19,6 +19,8 @@ const Messages = () => {
 
     return (
         <div className="min-h-screen bg-gray-100 py-12">
+            <Title title='Customer Questions' />
+
             <h2 className="text-4xl font-semibold text-center text-gray-800 mb-10">Customer Messages</h2>
             <div className="container mx-auto px-4">
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

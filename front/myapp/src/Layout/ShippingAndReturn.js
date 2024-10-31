@@ -1,11 +1,12 @@
 import React from 'react';
+import Title from './Title'
 
 const ShippingAndReturn = () => {
     return (
         <div className="bg-gray-50 min-h-screen py-16 px-4 lg:px-8">
             <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-lg">
                 <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">Shipping & Return Policy</h1>
-
+    <Title title='Shipping and returns policy'/>
                 {/* Shipping Policy Section */}
                 <div className="mb-10">
                     <h2 className="text-2xl font-semibold text-green-600 mb-4">Shipping Policy</h2>

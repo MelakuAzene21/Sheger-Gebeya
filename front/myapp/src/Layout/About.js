@@ -1,6 +1,6 @@
 import React from 'react';
 import Title from './Title';
-
+import { Link } from 'react-router-dom';
 const About = () => {
     return (
         <div className="bg-gray-100 min-h-screen">
@@ -71,6 +71,20 @@ const About = () => {
                         </div>
                     </div>
                 </div>
+
+
+
+                <div className="text-center">
+                    <h3 className="text-2xl font-bold text-green-500 mb-2">Discover Our Best Products!</h3>
+                    <p className="text-gray-600 mb-4">Experience quality and value like never before with our top-rated products.</p>
+                    <Link
+                        to="/"
+                        className="inline-block px-6 py-3 bg-green-500 text-white rounded-md shadow hover:bg-green-600 transition duration-300"
+                    >
+                        Shop Now
+                    </Link>
+                </div>
+
             </div>
         </div>
     );

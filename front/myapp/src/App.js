@@ -40,6 +40,7 @@ import ShippingAndReturn from './Layout/ShippingAndReturn.js'
 import TermsAndConditions from './Layout/TermsAndConditions.js'
 import PaymentMethod2 from './Layout/PaymentMethod.js';
 import CustomerMessage from './Layout/CustomerMessage.js'
+import WishlistPage from './Layout/WishlistPage.js';
 function App() {
   const dispatch=useDispatch();
   const {data:user}=useGetCurrentUserQuery();
@@ -66,7 +67,8 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="*" element={<NotFound />} />
           <Route path="/cart" element={<ProtectedRoute component={Cart} />} />
-          
+             <Route path="/wishlist" element={<ProtectedRoute component={WishlistPage} />} />
+
              <Route path='/dashboard' element={<ProtectedRoute component={Dashboard} />} />
 
            <Route path='/reviews/:id' element={<ProtectedRoute component={ReviewsPage}/>}/>
