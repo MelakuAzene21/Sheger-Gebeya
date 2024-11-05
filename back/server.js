@@ -12,6 +12,7 @@ const cartRoutes = require('./routes/cartRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const messageRoutes = require('./routes/messageRoutes');
 const favoritesRoutes = require('./routes/favorites');
+const paymentRoutes = require('./routes/Payment');
 
 // const { protect } = require('../middleware/authMiddleware');
 // const { createNote, getNotes, updateNote, deleteNote } = require('../controllers/noteController');
@@ -33,6 +34,7 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes)
 app.use('/api/users',userCredentialRoute)
 app.use('/api/favorites', favoritesRoutes);
+app.use('/payment', paymentRoutes);
 app.use('/uploads',express.static(path.join(__dirname,"uploads")))
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

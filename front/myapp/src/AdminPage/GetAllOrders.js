@@ -40,11 +40,11 @@ const GetAllOrders = () => {
 
     return (
         <div className="px-0 py-6"> {/* Removed container class to eliminate padding */}
-            <h1 className="text-2xl font-bold mb-4 text-center">There are {orders.length} Orders</h1>
+            <h1 className="text-2xl font-bold mb-4 text-white text-center">There are {orders.length} Orders</h1>
   <Title title={"All Orders"}/>
             {/* Table now spans the full width */}
-            <div className="w-full">
-                <table className="min-w-full w-full divide-y divide-gray-200">
+            <div className="w-full max-h-[500px] overflow-y-auto">
+                <table className="min-w-full  divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                         <tr>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
@@ -76,12 +76,21 @@ const GetAllOrders = () => {
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     {order.shippingAddress.address}, {order.shippingAddress.city}, {order.shippingAddress.zipCode}, {order.shippingAddress.country}
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {order.isPaid ? 'Paid' : 'Not Paid'}
+                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <span className={order.isPaid ? 'text-green-600 font-mono font-extrabold' : 'text-red-600'}>
+                                        {order.isPaid ? 'Paid' : 'Not Paid'}
+                                    </span>
                                 </td>
+
+
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {order.isDelivered ? 'Delivered' : 'Not Delivered'}
+                                    <span className={order.isDelivered ? 'text-green-600' : 'text-red-600'}>
+                                        {order.isDelivered ? 'Delivered' : 'Not Delivered'}
+                                    </span>
                                 </td>
+
+
+
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <button
                                         onClick={() => handleEdit(order._id)}
@@ -91,7 +100,7 @@ const GetAllOrders = () => {
                                     </button>
                                     <button
                                         onClick={() => handleDelete(order._id)}
-                                        className="text-red-500 hover:text-red-700"
+                                        className="text-red-500 hover:text-red-700 "
                                     >
                                         Delete
                                     </button>

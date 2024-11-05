@@ -14,9 +14,7 @@ const PaymentMethod = () => {
     const [createOrder, { isLoading,  isError, error }] = useCreateOrderMutation();
     const dispatch=useDispatch()
 
-    const handlePaymentSelection = (e) => {
-        setPaymentMethod(e.target.value);
-    };
+    
 
     const handleContinue = async () => {
       
@@ -40,6 +38,10 @@ const PaymentMethod = () => {
             toast.error(`${err.message}`);
         }
 
+    };
+
+    const handlePaymentSelection = (e) => {
+        setPaymentMethod(e.target.value);
     };
     return (
         <div className="container mx-auto p-6 bg-white rounded-lg shadow-lg">

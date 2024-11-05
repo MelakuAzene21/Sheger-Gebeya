@@ -137,6 +137,7 @@ import { AiOutlineZoomIn, AiOutlineClose, AiOutlineHeart, AiFillHeart } from 're
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import axios from 'axios';
+import FAQ from '../Layout/FAQ.js';
 const ProductDetails = () => {
     const { id } = useParams();
     const { data: product, error, isLoading } = useGetProductByIdQuery(id);
@@ -650,7 +651,7 @@ const ProductDetails = () => {
                 </div>
             )}
 
-
+            <FAQ  className='bg-gray-800'/>
 
 
 

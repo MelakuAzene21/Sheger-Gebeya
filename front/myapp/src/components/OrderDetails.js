@@ -24,7 +24,14 @@ const OrderDetails = () => {
                 <div className="bg-gray-50 p-6 rounded-lg shadow-md">
                     <h3 className="text-xl font-semibold text-gray-700 mb-4">Order Info</h3>
                     <p className="text-gray-600"><span className="font-semibold">Order ID:</span> {order._id}</p>
-                    <p className="text-gray-600"><span className="font-semibold">Status:</span> {order.isDelivered ? 'Delivered' : 'Not Delivered'}</p>
+                    {/* <p className="text-gray-600"><span className="font-semibold">Status:</span> {order.isDelivered ? 'Delivered' : 'Not Delivered'}</p> */}
+                    <p className="text-gray-600">
+                        <span className="font-semibold"> Status:</span>
+                        <span className={order.isDelivered ? 'text-green-600 italic' : 'text-red-600 italic'}>
+                            {order.isDelivered ? 'Delivered' : 'Not Delivered'}
+                        </span>
+                    </p>
+
                     <p className="text-gray-600"><span className="font-semibold">Date:</span> {new Date(order.createdAt).toLocaleDateString()}</p>
                 </div>
  
@@ -41,7 +48,12 @@ const OrderDetails = () => {
             {/* Payment Info */}
             <div className="bg-gray-50 p-6 rounded-lg shadow-md mb-8">
                 <h3 className="text-xl font-semibold text-gray-700 mb-4">Payment Info</h3>
-                <p className="text-gray-600"><span className="font-semibold">Payment Status:</span> {order.isPaid ? 'Paid' : 'Not Paid'}</p>
+                <p className="text-gray-600">
+                    <span className="font-semibold">Payment Status:</span>
+                    <span className={order.isPaid ? 'text-green-600 italic font-extrabold text-1.5xl ml-2' : 'text-red-600 italic'}>
+                        {order.isPaid ? 'Paid' : 'Not Paid'}
+                    </span>
+                </p>
                 <p className="text-gray-600"><span className="font-semibold">Amount Paid:</span> ${order.totalPrice}</p>
                 <p className="text-gray-600"><span className="font-semibold">Payment Method:</span> {order.paymentMethod}</p>
             </div>

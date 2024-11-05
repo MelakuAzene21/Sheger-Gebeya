@@ -12,6 +12,7 @@ const addOrderItems = async (req, res) => {
         taxPrice,
         shippingPrice,
         totalPrice,
+        tx_ref,
     } = req.body;
 
     const cart = await Cart.findOne({ user: req.user._id }).populate('items.product', 'name price images Stock');
@@ -52,6 +53,10 @@ const addOrderItems = async (req, res) => {
         taxPrice,
         shippingPrice,
         totalPrice,
+        tx_ref,
+        paymentResult: {
+            status: 'pending', // Initially set payment status to pending
+        }
     });
 
     const createdOrder = await order.save();

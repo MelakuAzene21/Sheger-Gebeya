@@ -41,6 +41,9 @@ import TermsAndConditions from './Layout/TermsAndConditions.js'
 import PaymentMethod2 from './Layout/PaymentMethod.js';
 import CustomerMessage from './Layout/CustomerMessage.js'
 import WishlistPage from './Layout/WishlistPage.js';
+import Payment from './Payment/PaymentPage.js'
+import Success from './Payment/Success.js';
+import ThankYou from './Payment/ThankYou.js';
 function App() {
   const dispatch=useDispatch();
   const {data:user}=useGetCurrentUserQuery();
@@ -91,8 +94,18 @@ function App() {
           } />
           <Route path='/shipping-info' element={<ProtectedRoute component={ShippingInfo} />
           } />
+
+             <Route path='/chapa-payment' element={<ProtectedRoute component={Payment} />
+             } />
           <Route path='/payment' element={<ProtectedRoute component={PaymentMethod} />
           } />
+
+
+             <Route path='/success' element={<Success />} />
+             } />
+            <Route path='/thank-you' element={<ThankYou />
+             } />
+
              <Route path='/profile' element={<ProtectedRoute component={Profile} />
              } />
 

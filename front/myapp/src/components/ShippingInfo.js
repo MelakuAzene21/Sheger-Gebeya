@@ -1,61 +1,106 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
-
-import { useGetCurrentUserQuery } from '../features/api/authApi';  // Fetch user details hook
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useCreateOrderMutation } from '../features/api/orderApi';
+import axios from 'axios';
+import { emptyCart } from '../features/cart/cartSlice';
+import { v4 as uuidv4 } from 'uuid';
+import { useGetCurrentUserQuery } from '../features/api/authApi';
 import Title from '../Layout/Title';
-//  import { useCreateOrderMutation } from '../features/api/orderApi';  // Order creation hook
+import toast from 'react-hot-toast';
+import { ClipLoader } from 'react-spinners'; // Import the spinner
+
 const ShippingInfo = () => {
     const { cartItems } = useSelector((state) => state.cart);
     const { shippingAddress } = useSelector((state) => state.order);
-     
-     //line
+    const [loading, setLoading] = useState(false);
+    const [paymentUrl, setPaymentUrl] = useState('');
+    const { data: userDetails } = useGetCurrentUserQuery();
 
-        const { data: userDetails} = useGetCurrentUserQuery();
-        // const [createOrder, { isLoading }] = useCreateOrderMutation();
-    
-        // const handlePlaceOrder = async () => {
-        //     if (userDetails) {
-        //         try {
-        //             await createOrder({
-        //                 userId: userDetails.id,  // Use the logged-in user's ID or name
-        //                 items: cartItems,  // Your cart items
-        //                 shippingAddress: userDetails.address,  // If you have this in the user details
-        //             });
-        //             console.log('Order placed successfully');
-        //         } catch (error) {
-        //             console.error('Order failed', error);
-        //         }
-        //     }
-        // };
+    const [createOrder, { isLoading, isError, error }] = useCreateOrderMutation();
+    const [paymentMethod, setPaymentMethod] = useState('Chapa');
 
-//line
-
+    const dispatch = useDispatch();
+    const transactionRef = uuidv4();
     // Calculate totals
     const totalPrice = cartItems.reduce((acc, item) => acc + item.quantity * item.price, 0);
-    const shippingPrice = totalPrice > 100 ? 0 : 10;  // Example logic
-    const taxPrice = totalPrice * 0.15;  // 15% tax
+    const shippingPrice = totalPrice > 100 ? 0 : 10;
+    const taxPrice = totalPrice * 0.15;
     const total = totalPrice + shippingPrice + taxPrice;
+
+    const handlePayment = async () => {
+        // Check if the cart is empty
+        if (cartItems.length === 0) {
+            toast.error('Your cart is empty. Please add items to the cart before proceeding.');
+            return;
+        }
+
+        setLoading(true);
+
+        const orderData = {
+            userId: userDetails._id,
+            items: cartItems,
+            shippingAddress: shippingAddress,
+            paymentMethod: paymentMethod,
+            totalPrice: totalPrice,
+            tx_ref:transactionRef
+        };
+
+        try {
+            // Step 1: Create the order
+            const result = await createOrder(orderData).unwrap();
+            console.log('Order Creation Result:', result);
+
+            // Only proceed if order creation is successful
+            if (result) {
+                    const paymentData = {
+                    amount: total,
+                    currency: 'ETB',
+                    email: userDetails.email,
+                     firstName: userDetails.name,
+                    lastName: userDetails.name,
+                    tx_ref: transactionRef,
+                };
+
+                const response = await axios.post('http://localhost:5000/payment/initialize', paymentData);
+
+                if (response.data && response.data.payment_url) {
+                    setPaymentUrl(response.data.payment_url);
+                    console.log('Redirecting to payment URL:', response.data.payment_url);
+                    window.location.href = response.data.payment_url;
+
+                    // Empty the cart after redirecting to the payment page
+                    dispatch(emptyCart());
+                } else {
+                    throw new Error('Payment URL not received');
+                }
+            }
+        } catch (error) {
+            console.error('Error initializing payment', error);
+            toast.error('Error initializing payment. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div className="container mx-auto p-6">
-            <Title title={"Shipping Info"}/>
+            <Title title={"Shipping Info"} />
             <div className="flex flex-col lg:flex-row">
                 {/* Shipping Info */}
-
-               
                 {userDetails ? (
-                                <>
-                                    
-                        <div className="lg:w-2/3 bg-white p-6 rounded-lg shadow-lg">
-                            <h2 className="text-2xl font-bold mb-4">Shipping Info</h2>
-                            <p><strong>Name:</strong> {userDetails.name}</p>
-                            <p><strong>Phone Number:</strong> {shippingAddress.phoneNumber}</p>
-                            <p><strong>Address:</strong> {shippingAddress.address}, {shippingAddress.city}, {shippingAddress.zipCode}, {shippingAddress.country}</p>
-                            <h3 className="text-xl font-semibold mt-6">Items in Cart</h3>
-                            {cartItems.length === 0 ? (
-                                <p>Your cart is empty</p>
-                            ) : (cartItems.map((item) => (
+                    <div className="lg:w-2/3 bg-white p-6 rounded-lg shadow-lg">
+                        <h2 className="text-2xl font-bold mb-4">Shipping Info</h2>
+                        <p><strong>Name:</strong> {userDetails.name}</p>
+                        <p><strong>Phone Number:</strong> {shippingAddress.phoneNumber}</p>
+                        <p><strong>Email:</strong> {userDetails.email}</p>
+                        <p><strong>Address:</strong> {shippingAddress.address}, {shippingAddress.city}, {shippingAddress.zipCode}, {shippingAddress.country}</p>
+                        <h3 className="text-xl font-semibold mt-6">Items in Cart</h3>
+                        {cartItems.length === 0 ? (
+                            <p>Your cart is empty</p>
+                        ) : (
+                            cartItems.map((item) => (
                                 <div key={item._id} className="flex justify-between mb-4">
                                     <div className="flex">
                                         <img src={`http://localhost:5000${item.images[0]}`} alt={item.name} className="w-16 h-16 object-cover rounded-lg mr-4" />
@@ -63,25 +108,34 @@ const ShippingInfo = () => {
                                     </div>
                                     <p>{item.quantity} x ${item.price} = ${item.quantity * item.price}</p>
                                 </div>
-                            )))}
-                        </div>
-                                </>
-                            ) : (
-                                <p>User details not available</p>
-                            )}
-
-
+                            ))
+                        )}
+                    </div>
+                ) : (
+                    <p>User details not available</p>
+                )}
 
                 {/* Order Summary */}
                 <div className="lg:w-1/3 lg:ml-8 mt-8 lg:mt-0 bg-white p-6 rounded-lg shadow-lg">
-               
                     <h2 className="text-xl font-bold mb-4">Order Summary</h2>
                     <p>Total Price: ${totalPrice.toFixed(2)}</p>
                     <p>Shipping Price: ${shippingPrice.toFixed(2)}</p>
                     <p>Tax: ${taxPrice.toFixed(2)}</p>
                     <p><strong>Total: ${total.toFixed(2)}</strong></p>
+                    {/* <button onClick={handlePayment} disabled={loading} className="bg-blue-500 text-white px-4 py-2 rounded mt-4 inline-block">
+                        {loading ? 'Processing...' : 'Proceed to Payment'}
+                    </button> */}
 
-                    <Link to="/payment" className="bg-blue-500 text-white px-4 py-2 rounded mt-4 inline-block">Proceed to Payment</Link>
+                    <button
+                        onClick={handlePayment}
+                        disabled={loading}
+                        className="bg-blue-500 text-white px-4 py-2 rounded mt-4 inline-block"
+                    >
+                        {loading ? (
+                            <ClipLoader color={'#ffffff'} loading={loading} size={20} />
+                        ) : 'Proceed to Payment'}
+                    </button>
+
                 </div>
             </div>
         </div>
@@ -89,7 +143,6 @@ const ShippingInfo = () => {
 };
 
 export default ShippingInfo;
-
 
 
 

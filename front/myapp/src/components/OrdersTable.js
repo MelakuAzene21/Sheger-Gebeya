@@ -176,15 +176,22 @@ const OrdersTable = () => {
                             <TableCell>{order._id}</TableCell>
                             <TableCell>${order.totalPrice.toFixed(2)}</TableCell>
                             {/* Payment Status Color */}
-                            <TableCell className={getPaymentStatusColor(order.isPaid)}>
-                                {order.isPaid ? 'Paid' : 'Not Paid'}
+                            <TableCell>
+                                <span className={`font-bold ${order.isPaid ? 'text-green-500' : 'text-red-500'}`}>
+                                    {order.isPaid ? 'Paid' : 'Not Paid'}
+                                </span>
                             </TableCell>
+
                             {/* Delivery Status Color */}
-                            <TableCell className={getDeliveryStatusColor(order.isDelivered)}>
+                           
+                            <TableCell>
+                                <span className={`font-bold ${order.isDelivered ? 'text-green-500' : 'text-red-500'}`}>
+
                                 {order.isDelivered ? 'Delivered' : 'Not Delivered'}
+                                </span>
                             </TableCell>
                             <TableCell>
-                                <Link to={`/order/${order._id}`} className="text-blue-500 hover:underline">Details</Link>
+                                <Link to={`/order/${order._id}`} className="text-blue-500 cursor bg-green-400 rounded-xl p-2">Details</Link>
                             </TableCell>
                         </TableRow>
                     ))}

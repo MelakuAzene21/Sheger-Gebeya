@@ -32,10 +32,10 @@ const shippingAddressSchema = mongoose.Schema(
 
 const paymentResultSchema = mongoose.Schema(
     {
-        id: { type: String },
-        status: { type: String },
-        update_time: { type: String },
-        email_address: { type: String },
+        id: { type: String }, // Payment ID from payment gateway
+        status: { type: String }, // Success, Pending, Failed
+        update_time: { type: String }, // Timestamp for payment update
+        email_address: { type: String }, // Email used for payment
     },
     {
         _id: false,
@@ -56,6 +56,10 @@ const orderSchema = mongoose.Schema(
             required: true,
         },
         paymentResult: paymentResultSchema,
+        tx_ref: { // Add tx_ref to track the transaction reference
+            type: String,
+            required: true,
+        },
         itemsPrice: {
             type: Number,
             required: true,
