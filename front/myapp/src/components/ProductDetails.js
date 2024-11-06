@@ -1,4 +1,3 @@
-
 // import React, { useState } from 'react';
 // import { Link, useParams } from 'react-router-dom';
 // import { useDispatch } from 'react-redux';
@@ -128,6 +127,7 @@ import { useNavigate } from 'react-router-dom';
 import { useParams, Link } from 'react-router-dom';
 import { useGetProductByIdQuery } from '../features/api/authApi';
 import { useGetCurrentUserQuery } from '../features/api/authApi';
+import { usePostReviewMutation } from '../services/productsApi.js';
 import { useDispatch } from 'react-redux';
 import { addItemToCart } from '../features/cart/cartSlice';
 import toast from 'react-hot-toast';
@@ -138,9 +138,17 @@ import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import axios from 'axios';
 import FAQ from '../Layout/FAQ.js';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faStar } from '@fortawesome/free-solid-svg-icons'
+import { useGetReviewsQuery } from '../services/productsApi.js';
+import Spinner from '../Layout/Spinner.js';
+import { faCartPlus } from '@fortawesome/free-solid-svg-icons';
 const ProductDetails = () => {
     const { id } = useParams();
+    const { currentUser } = useGetCurrentUserQuery(); // Fetch the current authenticated user
+    const currentUserId = currentUser?._id;
     const { data: product, error, isLoading } = useGetProductByIdQuery(id);
+    const { data: reviews1, isLoading1, error1 } = useGetReviewsQuery(id);
 
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const [quantity, setQuantity] = useState(1);
@@ -154,67 +162,20 @@ const ProductDetails = () => {
 
     const { data: user } = useGetCurrentUserQuery(); // Fetch current user info
     const [isFavorite, setIsFavorite] = useState(false);
+
+
+    // State for review form inputs
+    const [rating, setRating] = useState(0); // Default rating is 0
+    const [hoverRating, setHoverRating] = useState(0); // For hover effect on stars
+    const [comment, setComment] = useState('');
+    const [postReview] = usePostReviewMutation();
+    // Clear form after successful review submission
+    useEffect(() => {
+        setRating(0); // Reset rating to 0 after submission
+        setComment(''); // Clear comment
+    }, [reviews1]);
   const navigate=useNavigate();
-    // // Fetch and update favorite status on load
-    // useEffect(() => {
-    //     const checkFavoriteStatus = async (userId) => {
-    //         try {
-    //             const response = await fetch(`http://localhost:5000/api/favorites/${userId}/${id}`, { method: 'GET' });
-    //             if (response.ok) {
-    //                 const data = await response.json();
-    //                 setIsFavorite(data.length > 0); // Assuming it returns an array of favorites
-    //             } else {
-    //                 setIsFavorite(false); // No favorites found
-    //             }
-    //         } catch (error) {
-    //             console.error('Failed to fetch favorite status', error);
-    //         }
-    //     };
-
-    //     // Only check the favorite status if the user is defined
-    //     if (user) {
-    //         checkFavoriteStatus(user._id); // Use user ID to check status
-    //     }
-    // }, [id, user]); // Run effect when `id` or `user` changes
-
-    // // Toggle favorite status
-    // const toggleFavorite = async () => {
-    //     if (!user) {
-    //         toast.error('You need to log in to manage favorites.');
-    //         return; // Exit if the user is not logged in
-    //     }
-
-    //     try {
-    //         const response = await fetch(`http://localhost:5000/api/favorites/${user._id}/${id}`, {
-    //             method: isFavorite ? 'DELETE' : 'POST',
-    //             headers: { 'Content-Type': 'application/json' },
-    //             body: JSON.stringify({ userId: user._id }) // Send user ID in the body
-    //         });
-
-    //         if (!response.ok) throw new Error('Failed to update favorite status');
-
-    //         setIsFavorite((prev) => !prev);
-    //         toast.success(isFavorite ? 'Removed from favorites!' : 'Added to favorites!');
-    //     } catch (error) {
-    //         toast.error('Failed to update favorites');
-    //         console.error('Error updating favorite status:', error);
-    //     }
-    // };
-
-    // if (userLoading) return <div>Loading user data...</div>;
-    // if (userError) return <div>Error loading user data.</div>;
-
-
-    // const handleAddToCart = async () => {
-    //     if (product.Stock < 1) {
-    //         return toast.error('Product is out of stock');
-    //     }
-    //     dispatch(addItemToCart({ ...product, quantity }));
-    //     toast.success('Item added to cart!');
-    // };
-
-
-
+    
     const handleAddToCart = async () => {
             if (product.Stock < 1) {
                 return toast.error('Product is out of stock');
@@ -273,6 +234,19 @@ const ProductDetails = () => {
 
         fetchReviews();
     }, [id]);
+
+
+
+    const handleReviewSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            await postReview({ productId: id, rating, comment, user: currentUserId }).unwrap();
+            toast.success('Review submitted!');
+        } catch (err) {
+            toast.error('Already you posted');
+        }
+    };
+
 
 
 
@@ -379,6 +353,37 @@ const ProductDetails = () => {
         }
     };
 
+
+
+    const getStars = (rating) => {
+        const fullStars = Math.floor(rating);  // Full stars
+        const halfStar = rating % 1 !== 0;     // Half star if rating is not an integer
+        const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);  // Remaining empty stars
+
+        const stars = [];
+
+        // Push full stars (★)
+        for (let i = 0; i < fullStars; i++) {
+            stars.push(<span key={`full-${i}`}>&#9733;</span>); // Full star Unicode
+        }
+
+        // Push half star (☆ or ⯪)
+        if (halfStar) {
+            stars.push(<span key="half">&#9734;</span>); // Empty star for half-star rating
+        }
+
+        // Push empty stars (☆)
+        for (let i = 0; i < emptyStars; i++) {
+            stars.push(<span key={`empty-${i}`}>&#9734;</span>); // Empty star Unicode
+        }
+
+        return stars;
+    };
+
+
+
+    if (isLoading1) return <div><Spinner /></div>;
+    if (error1) return <div>Error loading reviews.</div>;
    
     
     if (isLoading) return <Skeleton count={10} />
@@ -391,6 +396,31 @@ const ProductDetails = () => {
     if (err) {
         return <p className="text-center text-red-500">{error}</p>;
     }
+
+    const StarRating = ({ ratingValue, setRating, setHoverRating, hoverRating }) => {
+        const stars = Array(5).fill(0); // Array of 5 stars
+
+
+
+
+        return (
+            <div className="flex space-x-2">
+                {stars.map((_, index) => {
+                    const starValue = index + 1;
+                    return (
+                        <FontAwesomeIcon
+                            key={index}
+                            icon={faStar}
+                            className={`cursor-pointer text-2xl ${starValue <= (hoverRating || ratingValue) ? 'text-yellow-500' : 'text-gray-300'}`}
+                            onClick={() => setRating(starValue)} // Set the rating on click
+                            onMouseEnter={() => setHoverRating(starValue)} // Show hover effect
+                            onMouseLeave={() => setHoverRating(0)} // Remove hover effect
+                        />
+                    );
+                })}
+            </div>
+        );
+    };
     return (
         <div className="w-full px-4 py-12">
             <Title title={"Products Details"} />
@@ -470,8 +500,6 @@ const ProductDetails = () => {
                             )}
                         </div>
                     )}
-
-
                     {/* Image Previews */}
                     <div className="flex space-x-2 mt-4">
                         {product.images.map((image, index) => (
@@ -492,7 +520,7 @@ const ProductDetails = () => {
                     <p className="text-lg text-white"><span className='text-2xl'>Price</span>: {product.price} ETB</p>
                     <p className="text-white"><span className='text-2xl'>Brand</span>: {product.brand}</p>
                     <p className="text-white"><span className='text-2xl'>Category</span>: {product.category}</p>
-                    <p className="text-white"><span className='text-2xl'>Rating</span>: {product.rating} / 5</p>
+                    <p className="text-white"><span className='text-2xl'>Rating</span>: <span className='text-yellow-300 text-2xl'>{getStars(product.rating)}</span></p>
                     <p className="text-white"><span className='text-2xl'>Number of Reviewers</span>: {product.numReviews}</p>
                     <p className="text-white"><span className='text-2xl'>Description:</span> {product.description}</p>
 
@@ -540,12 +568,50 @@ const ProductDetails = () => {
             {/* Reviews Section */}
             <div className="mt-12 space-y-8">
                 <div className="text-center">
-                    <Link
+                    {/* <Link
                         to={`/reviews/${id}`}
                         className="inline-block bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold shadow-lg transition"
                     >
                         POST Your Review
-                    </Link>
+                    </Link> */}
+
+                    <form onSubmit={handleReviewSubmit} className="bg-white shadow-lg rounded-lg p-8 mb-8 max-w-lg mx-auto">
+                        <h2 className="text-2xl font-semibold text-gray-800 mb-6">Leave a Review</h2>
+
+                        <div className="mb-6">
+                            {/* <label className="block text-gray-700 font-semibold text-lg mb-2">Rating</label> */}
+                            <div className="flex items-center">
+                                <StarRating
+                                    ratingValue={rating}
+                                    setRating={setRating}
+                                    hoverRating={hoverRating}
+                                    setHoverRating={setHoverRating}
+                                />
+                                <span className="text-gray-500 ml-2">(5)</span>
+                            </div>
+                        </div>
+
+                        <div className="mb-6">
+                            {/* <label className="block text-gray-700 font-semibold text-lg mb-2">Comment</label> */}
+                            <textarea
+                                className="w-full h-32 p-4 border border-gray-300 rounded-lg resize-none focus:outline-none focus:border-blue-500 transition"
+                                value={comment}
+                                onChange={(e) => setComment(e.target.value)}
+                                placeholder="Write your comments here..."
+                                required
+                            />
+                        </div>
+
+                        <button
+                            type="submit"
+                            className="w-full bg-blue-600 text-white font-semibold text-lg py-3 rounded-lg hover:bg-blue-700 transition-colors"
+                        >
+                            Submit Review
+                        </button>
+                    </form>
+
+
+
                 </div>
                 {/* Conditionally display Reviews section */}
                 {reviews.length > 0 && (
@@ -587,24 +653,44 @@ const ProductDetails = () => {
                                 key={relatedProduct._id}
                                 className="bg-white border border-gray-200 rounded-lg shadow-lg"
                             >
-                                <img
+                                <Link to={`/products/${relatedProduct._id}`}> <img
                                     src={`http://localhost:5000${relatedProduct.images[0]}`}
                                     alt={relatedProduct.name}
                                     className="w-full h-48 object-cover"
-                                />
+                                /></Link>
+
+                               
                                 <div className="p-4">
                                     <h2 className="text-lg font-semibold mb-2">
                                         {relatedProduct.name}
-                                    </h2>
-                                    <p className="text-gray-700 mb-4">{relatedProduct.description}</p>
+                                    </h2>                                   
+                                    <p className="text-yellow-500">
+                                        <span className='text-yellow-300 text-2xl'>  {getStars(relatedProduct.rating)} ({relatedProduct.numReviews})</span>                                    </p>
+                                    <p className="text-gray-800">{`${relatedProduct.description.substring(0, 200)}...`}</p>
                                     <span className="text-yellow-300 line-through mr-2">{relatedProduct.price + 12}</span>
                                     <p className="text-blue-600 mb-4">{relatedProduct.price}  ETB</p>
-                                    <Link
-                                        to={`/products/${relatedProduct._id}`}
-                                        className="block w-full text-center text-white bg-blue-600 rounded-lg py-2 hover:bg-blue-500 transition-all"
-                                    >
-                                        View Details
-                                    </Link>
+                                    <div className="flex justify-between mt-4">
+                                        <Link
+                                            to={`/products/${relatedProduct._id}`}
+                                            className="text-center text-white w-32 bg-blue-400 rounded-lg p-2 hover:bg-blue-800 transition-all"
+                                        >
+                                            View Details
+                                        </Link>
+
+                                        {/* Add to Cart Icon Button */}
+                                        <button
+                                            onClick={() => handleAddToCart()}
+                                            disabled={relatedProduct.Stock === 0}
+                                            className={`w-10 h-10 flex items-center justify-center font-bold text-white rounded-full shadow-lg transition-all ${relatedProductBrand.Stock === 0
+                                                ? 'bg-gray-400 cursor-not-allowed'
+                                                : 'bg-green-600 hover:bg-green-400'
+                                                }`}
+                                            aria-label="Add to Cart"
+                                            title='Add to Cart'
+                                        >
+                                            <FontAwesomeIcon icon={faCartPlus} className="text-lg" />
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         ))}
@@ -624,26 +710,48 @@ const ProductDetails = () => {
                                 key={relatedProductBrand._id}
                                 className="bg-white border border-gray-200 rounded-lg shadow-lg"
                             >
-                                <img
-                                    src={`http://localhost:5000${relatedProductBrand.images[0]}`}
-                                    alt={relatedProductBrand.name}
-                                    className="w-full h-48 object-cover"
-                                />
+                                <Link to={`/products/${relatedProductBrand._id}`}>
+                                    <img
+                                        src={`http://localhost:5000${relatedProductBrand.images[0]}`}
+                                        alt={relatedProductBrand.name}
+                                        className="w-full h-48 object-cover"
+                                    />
+                                </Link>
+                               
                                 <div className="p-4">
                                     <h2 className="text-lg font-semibold mb-2">
                                         {relatedProductBrand.name}
                                     </h2>
-                                    <p className="text-gray-700 mb-4">{relatedProductBrand.description}</p>
+                                    <p className="text-yellow-500">
+                                        <span className='text-yellow-300 text-2xl'>{getStars(relatedProductBrand.rating)} ({relatedProductBrand.numReviews})</span>
+                                    </p>
+                                    <p className="text-gray-800">{`${relatedProductBrand.description.substring(0, 200)}...`}</p>
                                     <span className="text-yellow-300 line-through mr-2">{relatedProductBrand.price + 12}</span>
 
                                     <p className="text-blue-600 mb-4">{relatedProductBrand.price}  ETB</p>
-                                    <Link
-                                        to={`/products/${relatedProductBrand._id}`}
-                                        className="block w-full text-center text-white bg-blue-600 rounded-lg py-2 hover:bg-blue-500 transition-all"
+                                    <div className="flex justify-between mt-4">
+                                        <Link
+                                            to={`/products/${relatedProductBrand._id}`}
+                                            className="text-center text-white w-32 bg-blue-400 rounded-lg p-2 hover:bg-blue-800 transition-all"
+                                        >
+                                            View Details
+                                        </Link>
 
-                                    >
-                                        View Details
-                                    </Link>
+                                        {/* Add to Cart Icon Button */}
+                                        <button
+                                            onClick={() => handleAddToCart()}
+                                            disabled={relatedProductBrand.Stock === 0}
+                                            className={`w-10 h-10 flex items-center justify-center font-bold text-white rounded-full shadow-lg transition-all ${relatedProductBrand.Stock === 0
+                                                ? 'bg-gray-400 cursor-not-allowed'
+                                                : 'bg-green-600 hover:bg-green-400'
+                                                }`}
+                                            aria-label="Add to Cart"
+                                            title='Add to Cart'
+                                        >
+                                            <FontAwesomeIcon icon={faCartPlus} className="text-lg" />
+                                        </button>
+                                    </div>
+
                                 </div>
                             </div>
                         ))}

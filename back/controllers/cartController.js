@@ -35,7 +35,7 @@ const addItemToCart = async (req, res) => {
 
     // Find the user's cart
     let cart = await Cart.findOne({ user: req.user._id });
-
+ 
     if (!cart) {
         // Create a new cart if it doesn't exist
         cart = await Cart.create({

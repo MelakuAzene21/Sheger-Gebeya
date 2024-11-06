@@ -282,8 +282,9 @@
 //         </div>
 //     );
 // };
-
 // export default ProductsPage;
+
+
 // ProductsPage.js
 import React, { useState, useEffect } from 'react';
 import { useGetProductsQuery } from './services/productsApi';
@@ -292,7 +293,12 @@ import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import Carousel from './Layout/Carousel';
 import Title from './Layout/Title';
-
+import { useDispatch } from 'react-redux';
+import { addItemToCart } from './features/cart/cartSlice';
+import toast from 'react-hot-toast';
+import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCartPlus } from '@fortawesome/free-solid-svg-icons';
 const ProductsPage = () => {
     const [page, setPage] = useState(1);
     const [keyword, setKeyword] = useState('');
@@ -300,7 +306,8 @@ const ProductsPage = () => {
     const [brand, setBrand] = useState('');
     const [minPrice, setMinPrice] = useState('');
     const [maxPrice, setMaxPrice] = useState('');
-
+    const dispatch = useDispatch();
+    const [quantity] = useState(1);
     const { data, error, isLoading, refetch } = useGetProductsQuery({
         page,
         keyword,
@@ -321,13 +328,65 @@ const ProductsPage = () => {
 
     if (isLoading) return <Skeleton count={20} />;
     if (error) return <div className="text-center text-red-500">Error fetching products</div>;
+    const handleAddToCart = async (product) => {
+        if (!product) {
+            console.error("Product is undefined");
+            return;
+        }
+
+        if (product.Stock < 1) {
+            return toast.error('Product is out of stock');
+        }
+
+        dispatch(addItemToCart({ ...product, quantity }));
+
+        try {
+            await axios.post(
+                'http://localhost:5000/api/cart',
+                { productId: product._id, quantity },
+                {
+                    withCredentials: true, // Send cookies with request
+                }
+            );
+            toast.success('Item added to cart Data Base!');
+        } catch (error) {
+            console.error('Error adding to cart:', error.response ? error.response.data : error.message);
+        }
+    };
+
+
+
+    const getStars = (rating) => {
+        const fullStars = Math.floor(rating);  // Full stars
+        const halfStar = rating % 1 !== 0;     // Half star if rating is not an integer
+        const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);  // Remaining empty stars
+
+        const stars = [];
+
+        // Push full stars (★)
+        for (let i = 0; i < fullStars; i++) {
+            stars.push(<span key={`full-${i}`}>&#9733;</span>); // Full star Unicode
+        }
+
+        // Push half star (☆ or ⯪)
+        if (halfStar) {
+            stars.push(<span key="half">&#9734;</span>); // Empty star for half-star rating
+        }
+
+        // Push empty stars (☆)
+        for (let i = 0; i < emptyStars; i++) {
+            stars.push(<span key={`empty-${i}`}>&#9734;</span>); // Empty star Unicode
+        }
+
+        return stars;
+    };
 
     return (
         <div className="relative w-full min-h-screen bg-gray-800 text-white overflow-hidden">
             {/* <div className="absolute inset-0 z-0 opacity-30"> */}
                 <Carousel />
             {/* </div> */}
-            <div className="relative z-10 p-8">
+            <div className="relative px-3  ">
                 <Title title="Our Products" />
                 {/* Category Navigation */}
                 <div className="flex gap-4 justify-center mb-5">
@@ -408,23 +467,44 @@ const ProductsPage = () => {
                             <img
                                 src={`http://localhost:5000${product.images[0]}`}
                                 alt={product.name}
-                                className="w-full h-48 object-cover"
+                                className="w-full h-56 object-cover"
                             />
                             </Link> 
-                            <div className="p-4 ">
-                                <h2 className="text-2xl font-bold text-black mb-2">{product.name}</h2>
-                                <p className="text-gray-800 mb-4">{product.description}</p>
-                                <p className=" mb-4">
-                                    <span className="text-yellow-300 line-through mr-2 font-extrabold">{product.price + 12}  ETB</span>
-                                    <p className="text-blue-600  mr-2">{product.price}  ETB</p>
+                            <div className="p-1">
+                                <h2 className="font-bold text-black mb-2">{product.name}</h2>
+                                <p className="text-yellow-500">
+                                    <span className='text-yellow-300 text-3xl'> {getStars(product.rating)} ({product.numReviews})</span>
                                 </p>
-                                <Link
-                                    to={`/products/${product._id}`}
-                                    className="block w-full text-center text-white bg-blue-600 rounded-lg py-2 hover:bg-blue-500 transition-all"
-                                >
-                                    View Details
-                                </Link>
+
+                                <p className="text-gray-800">{`${product.description.substring(0, 100)}...`}</p>
+                                <p className="mb-1">
+                                    <span className="text-yellow-300 line-through mr-2 font-extrabold">{product.price + 12} ETB</span>
+                                    <span className="text-blue-600 mr-2">{product.price} ETB</span>
+                                </p>
+                                <div className="flex justify-between mt-4">
+                                    <Link
+                                        to={`/products/${product._id}`}
+                                        className="text-center text-white w-32 bg-blue-400 rounded-lg p-2 hover:bg-blue-800 transition-all"
+                                    >
+                                        View Details
+                                    </Link>
+
+                                    {/* Add to Cart Icon Button */}
+                                    <button
+                                        onClick={() => handleAddToCart(product)}
+                                        disabled={product.Stock === 0}
+                                        className={`w-10 h-10 flex items-center justify-center font-bold text-white rounded-full shadow-lg transition-all ${product.Stock === 0
+                                            ? 'bg-gray-400 cursor-not-allowed'
+                                            : 'bg-green-600 hover:bg-green-400'
+                                            }`}
+                                        aria-label="Add to Cart"
+                                    >
+                                        <FontAwesomeIcon icon={faCartPlus} className="text-lg" />
+                                    </button>
+                                </div>
+
                             </div>
+
                         </div>
                     ))}
                 </div>
@@ -434,19 +514,19 @@ const ProductsPage = () => {
                     <button
                         onClick={() => setPage(page - 1)}
                         disabled={page === 1}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-colors duration-300 disabled:opacity-50"
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-colors duration-300 disabled:opacity-35"
                     >
-                        Previous
+                        ❮
                     </button>
                     <span className="text-lg text-white">
-                        Page {page} of {data?.totalPages}
+                        {/* Page {page} of {data?.totalPages} */}
                     </span>
                     <button
                         onClick={() => setPage(page + 1)}
                         disabled={page === data?.totalPages}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-colors duration-300 disabled:opacity-50"
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-colors duration-300 disabled:opacity-35"
                     >
-                        Next
+                        ❯
                     </button>
                 </div>
             </div>
