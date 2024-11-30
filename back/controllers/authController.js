@@ -47,8 +47,8 @@ exports.loginUser = async (req, res) => {
     } else {
         res.status(401).json({ message: 'Invalid email or password' });
     }
-};
-
+}; 
+ 
 exports.logout=async(req,res)=>{
     if (req.cookies.token) {
       res.cookie("token","")

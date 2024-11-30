@@ -189,7 +189,6 @@ const ProductDetails = () => {
                         withCredentials: true, // Send cookies with request
                     }
                 );
-                toast.success('Item added to cart Data Base!');
             } catch (error) {
                 console.error('Error adding to cart:', error.response ? error.response.data : error.message);
             }

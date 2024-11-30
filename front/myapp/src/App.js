@@ -44,6 +44,7 @@ import WishlistPage from './Layout/WishlistPage.js';
 import Payment from './Payment/PaymentPage.js'
 import Success from './Payment/Success.js';
 import ThankYou from './Payment/ThankYou.js';
+import Skeletons from './Layout/Skeleton'
 function App() {
   const dispatch=useDispatch();
   const {data:user}=useGetCurrentUserQuery();
@@ -103,6 +104,7 @@ function App() {
 
              <Route path='/success' element={<Success />} />
              } />
+             <Route path='/skeleton' element={<Skeletons />}   />
             <Route path='/thank-you' element={<ThankYou />
              } />
 

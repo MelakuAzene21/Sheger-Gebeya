@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useCreateOrderMutation } from '../features/api/orderApi';
 import axios from 'axios';
@@ -10,11 +9,15 @@ import { useGetCurrentUserQuery } from '../features/api/authApi';
 import Title from '../Layout/Title';
 import toast from 'react-hot-toast';
 import { ClipLoader } from 'react-spinners'; // Import the spinner
+import Skeleton from 'react-loading-skeleton';
+import { Navigate } from 'react-router-dom';
+import '../Overlay.css'; // Import the overlay CSS file
 
 const ShippingInfo = () => {
     const { cartItems } = useSelector((state) => state.cart);
     const { shippingAddress } = useSelector((state) => state.order);
     const [loading, setLoading] = useState(false);
+    const [showOverlay, setShowOverlay] = useState(false); // state to control overlay visibility
     const [paymentUrl, setPaymentUrl] = useState('');
     const { data: userDetails } = useGetCurrentUserQuery();
 
@@ -37,6 +40,7 @@ const ShippingInfo = () => {
         }
 
         setLoading(true);
+        setShowOverlay(true); // Show the overlay
 
         const orderData = {
             userId: userDetails._id,
@@ -44,7 +48,7 @@ const ShippingInfo = () => {
             shippingAddress: shippingAddress,
             paymentMethod: paymentMethod,
             totalPrice: totalPrice,
-            tx_ref:transactionRef
+            tx_ref: transactionRef
         };
 
         try {
@@ -54,11 +58,11 @@ const ShippingInfo = () => {
 
             // Only proceed if order creation is successful
             if (result) {
-                    const paymentData = {
+                const paymentData = {
                     amount: total,
                     currency: 'ETB',
                     email: userDetails.email,
-                     firstName: userDetails.name,
+                    firstName: userDetails.name,
                     lastName: userDetails.name,
                     tx_ref: transactionRef,
                 };
@@ -81,12 +85,21 @@ const ShippingInfo = () => {
             toast.error('Error initializing payment. Please try again.');
         } finally {
             setLoading(false);
+            setShowOverlay(false); // Hide the overlay after payment initialization
         }
     };
 
     return (
         <div className="container mx-auto p-6">
             <Title title={"Shipping Info"} />
+
+            {/* Full-page overlay */}
+            {showOverlay && (
+                <div className="overlay">
+                    <ClipLoader size={50} color="#ffffff" /> {/* Spinner inside the overlay */}
+                </div>
+            )}
+
             <div className="flex flex-col lg:flex-row">
                 {/* Shipping Info */}
                 {userDetails ? (
@@ -122,20 +135,14 @@ const ShippingInfo = () => {
                     <p>Shipping Price: ${shippingPrice.toFixed(2)}</p>
                     <p>Tax: ${taxPrice.toFixed(2)}</p>
                     <p><strong>Total: ${total.toFixed(2)}</strong></p>
-                    {/* <button onClick={handlePayment} disabled={loading} className="bg-blue-500 text-white px-4 py-2 rounded mt-4 inline-block">
-                        {loading ? 'Processing...' : 'Proceed to Payment'}
-                    </button> */}
 
                     <button
                         onClick={handlePayment}
                         disabled={loading}
                         className="bg-blue-500 text-white px-4 py-2 rounded mt-4 inline-block"
                     >
-                        {loading ? (
-                            <ClipLoader color={'#ffffff'} loading={loading} size={20} />
-                        ) : 'Proceed to Payment'}
+                        {loading ? 'Processing...' : 'Proceed to Payment'}
                     </button>
-
                 </div>
             </div>
         </div>
@@ -143,7 +150,6 @@ const ShippingInfo = () => {
 };
 
 export default ShippingInfo;
-
 
 
 

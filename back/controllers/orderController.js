@@ -19,9 +19,9 @@ const addOrderItems = async (req, res) => {
 
 
  
-    if ( !cart||cart.items.length === 0) {
-      return res.status(400).json('No items in cart')
-    } 
+    // if ( !cart||cart.items.length === 0) {
+    //   return res.status(400).json('No items in cart')
+    // }  
 
     // Prepare order items
     const orderItems = cart.items.map(item => ({

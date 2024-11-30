@@ -296,10 +296,14 @@ import Title from './Layout/Title';
 import { useDispatch } from 'react-redux';
 import { addItemToCart } from './features/cart/cartSlice';
 import toast from 'react-hot-toast';
+import {  AiOutlineHeart, AiFillHeart } from 'react-icons/ai'; // Add Heart Icons
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCartPlus } from '@fortawesome/free-solid-svg-icons';
+import { useGetCurrentUserQuery } from './features/api/authApi';
+import { useParams ,useNavigate} from 'react-router-dom'
 const ProductsPage = () => {
+    const { id } = useParams();
     const [page, setPage] = useState(1);
     const [keyword, setKeyword] = useState('');
     const [category, setCategory] = useState('');
@@ -321,10 +325,41 @@ const ProductsPage = () => {
     const handleCategoryClick = (cat) => {
         setCategory(cat === 'All' ? '' : cat);
     };
+
+    const { data: user } = useGetCurrentUserQuery(); // Fetch current user info
+    // Track favorite status for each item
+    const [favoriteStatuses, setFavoriteStatuses] = useState({});
+        const navigate = useNavigate();
     // Refetch products when category changes
     useEffect(() => {
         refetch();
     }, [category, refetch]);
+
+    // Fetch and update favorite statuses on load
+    useEffect(() => {
+        const fetchFavoriteStatuses = async (userId) => {
+            if (!userId) return;
+
+            try {
+                const response = await fetch(`http://localhost:5000/api/favorites/${userId}`);
+                if (response.ok) {
+                    const favoriteData = await response.json();
+                    // Create a map of favorite statuses by productId
+                    const initialStatuses = {};
+                    favoriteData.forEach((favorite) => {
+                        initialStatuses[favorite.productId] = true;
+                    });
+                    setFavoriteStatuses(initialStatuses);
+                }
+            } catch (error) {
+                console.error('Failed to fetch favorite statuses', error);
+            }
+        };
+
+        if (user) {
+            fetchFavoriteStatuses(user._id);
+        }
+    }, [user]);
 
     if (isLoading) return <Skeleton count={20} />;
     if (error) return <div className="text-center text-red-500">Error fetching products</div>;
@@ -348,13 +383,42 @@ const ProductsPage = () => {
                     withCredentials: true, // Send cookies with request
                 }
             );
-            toast.success('Item added to cart Data Base!');
         } catch (error) {
             console.error('Error adding to cart:', error.response ? error.response.data : error.message);
         }
     };
 
 
+    // Toggle favorite status for a specific product
+    const toggleFavorite = async (productId) => {
+        if (!user) {
+            navigate('/login');
+            toast.error('You need to log in to manage favorites.');
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:5000/api/favorites/${user._id}/${productId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: user._id }),
+            });
+
+            if (response.ok) {
+                const message = await response.json();
+                setFavoriteStatuses((prevStatuses) => ({
+                    ...prevStatuses,
+                    [productId]: !prevStatuses[productId], // Toggle the specific product's favorite status
+                }));
+                toast.success(message.message);
+            } else {
+                toast.error('Failed to update favorite status');
+            }
+        } catch (error) {
+            toast.error('Failed to update favorites');
+            console.error('Error updating favorite status:', error);
+        }
+    };
 
     const getStars = (rating) => {
         const fullStars = Math.floor(rating);  // Full stars
@@ -380,6 +444,13 @@ const ProductsPage = () => {
 
         return stars;
     };
+
+
+
+
+
+
+
 
     return (
         <div className="relative w-full min-h-screen bg-gray-800 text-white overflow-hidden">
@@ -469,7 +540,25 @@ const ProductsPage = () => {
                                 alt={product.name}
                                 className="w-full h-56 object-cover"
                             />
+
                             </Link> 
+                            <button
+                                onClick={() => toggleFavorite(product._id)}
+                                className={`absolute bottom-48 right-4 p-2 rounded-full shadow-md ${favoriteStatuses[product._id] ? 'bg-red-300' : 'bg-white'
+                                    } hover:bg-gray-300 transition duration-300`}
+                            >
+                                {favoriteStatuses[product._id] ? (
+                                    <AiFillHeart
+                                        className="text-2xl text-gray-500"
+                                        title="Remove from favorites"
+                                    />
+                                ) : (
+                                    <AiOutlineHeart
+                                        className="text-2xl text-red-700"
+                                        title="Add to favorites"
+                                    />
+                                )}
+                            </button>
                             <div className="p-1">
                                 <h2 className="font-bold text-black mb-2">{product.name}</h2>
                                 <p className="text-yellow-500">
@@ -498,6 +587,7 @@ const ProductsPage = () => {
                                             : 'bg-green-600 hover:bg-green-400'
                                             }`}
                                         aria-label="Add to Cart"
+                                        title='Add to cart'
                                     >
                                         <FontAwesomeIcon icon={faCartPlus} className="text-lg" />
                                     </button>
