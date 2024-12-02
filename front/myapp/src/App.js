@@ -44,11 +44,15 @@ import WishlistPage from './Layout/WishlistPage.js';
 import Payment from './Payment/PaymentPage.js'
 import Success from './Payment/Success.js';
 import ThankYou from './Payment/ThankYou.js';
+import AdminJobs from './AdminPage/AdminHomePage.js';
 import Skeletons from './Layout/Skeleton'
+import { useSelector } from 'react-redux'; // For accessing the user role
+
 function App() {
   const dispatch=useDispatch();
   const {data:user}=useGetCurrentUserQuery();
-  
+  const user2 = useSelector((state) => state.auth.user); // Adjust based on your Redux state structure
+
   useEffect(()=>{
     if(user){
       dispatch(setUser(user))
@@ -69,11 +73,11 @@ function App() {
           <Route path='/' element={<ProductsPage  className="w-full"  />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/admin" element={<AdminJobs />} />
           <Route path="*" element={<NotFound />} />
           <Route path="/cart" element={<ProtectedRoute component={Cart} />} />
              <Route path="/wishlist" element={<ProtectedRoute component={WishlistPage} />} />
 
-             <Route path='/dashboard' element={<ProtectedRoute component={Dashboard} />} />
 
            <Route path='/reviews/:id' element={<ProtectedRoute component={ReviewsPage}/>}/>
              <Route path="/reviewProduct/:productId" element={<GetReviews />} />
@@ -101,6 +105,8 @@ function App() {
           <Route path='/payment' element={<ProtectedRoute component={PaymentMethod} />
           } />
 
+             <Route path='/products' element={<ProtectedRoute component={Products} />
+             } />
 
              <Route path='/success' element={<Success />} />
              } />
@@ -110,13 +116,12 @@ function App() {
 
              <Route path='/profile' element={<ProtectedRoute component={Profile} />
              } />
+             <Route path='/dashboard' element={<ProtectedRoute component={Dashboard} />} />
 
              <Route path='/users' element={<ProtectedRoute component={GetAllUser}  />
              } />
 
-             <Route path='/products' element={<ProtectedRoute component={Products} />
-             } />
-
+            
              <Route path='/products/add' element={<ProtectedRoute component={AddProduct} />
              } />
 
@@ -135,7 +140,10 @@ function App() {
         </Routes>
             
       </div>
+
+      {user2?.role==='user'&&(
       <Footer/>
+      )}
   </div>
     </Router>
     

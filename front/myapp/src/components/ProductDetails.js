@@ -137,7 +137,6 @@ import { AiOutlineZoomIn, AiOutlineClose, AiOutlineHeart, AiFillHeart } from 're
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import axios from 'axios';
-import FAQ from '../Layout/FAQ.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons'
 import { useGetReviewsQuery } from '../services/productsApi.js';
@@ -757,10 +756,6 @@ const ProductDetails = () => {
                     </div>
                 </div>
             )}
-
-            <FAQ  className='bg-gray-800'/>
-
-
 
         </div>
     );

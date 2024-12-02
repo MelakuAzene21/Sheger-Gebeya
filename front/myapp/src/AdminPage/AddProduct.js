@@ -269,7 +269,7 @@ const AddProduct = () => {
     return (
         <div className="max-w-md mx-auto mt-10">
             <Title title={"Add Products"}/>
-            <h1 className="text-3xl font-semibold mb-6 text-center">Add New Product</h1>
+            <h1 className="text-3xl font-semibold mb-6 text-center text-white">Add New Product</h1>
             <form className="bg-white shadow-lg rounded px-8 pt-6 pb-8 mb-4" onSubmit={handleSubmit}>
                 <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">Product Name</label>

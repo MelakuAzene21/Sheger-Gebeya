@@ -1,7 +1,8 @@
 import { useGetAllUsersQuery, useDeleteUserMutation, useUpdateProfileByAdminMutation } from '../features/api/authApi';
 import { useEffect, useState } from 'react';
 import Title from '../Layout/Title';
-
+import axios from 'axios'
+import toast from 'react-hot-toast';
 export default function GetAllUser() {
     const { data: users, error, isLoading } = useGetAllUsersQuery(); // Fetch all users
     const [deleteUser] = useDeleteUserMutation();
@@ -10,6 +11,8 @@ export default function GetAllUser() {
     const [editingUser, setEditingUser] = useState(null); // Holds the user being edited
     const [updatedName, setUpdatedName] = useState('');
     const [updatedEmail, setUpdatedEmail] = useState('');
+    const [updatingRoleUser, setUpdatingRoleUser] = useState(null); // Holds the user being updated for role
+    const [newRole, setNewRole] = useState(''); // State for the updated role
 
     useEffect(() => {
         if (error) {
@@ -56,22 +59,49 @@ export default function GetAllUser() {
                 await updateProfile({
                     _id: editingUser._id,
                     name: updatedName,
-                    email: updatedEmail,
+                    email: updatedEmail               
                 }).unwrap(); // Unwrap to handle promise properly
 
                 // Clear the form and reset editing state
                 setEditingUser(null);
                 setUpdatedName('');
                 setUpdatedEmail('');
+               
             } catch (error) {
                 console.log('Error updating user:', error);
+            }
+        }
+    };
+    const handleUpdateRole = (user) => {
+        setUpdatingRoleUser(user); // Set the user being updated for role
+        setNewRole(user.role); // Set the current role as the default value
+    };
+
+    const handleSubmitRoleUpdate = async (e) => {
+        e.preventDefault();
+        if (updatingRoleUser) {
+            try {
+                // Use axios for the role update request
+                const response = await axios.put(
+                    `http://localhost:5000/api/role/${updatingRoleUser._id}`,
+                    { role: newRole },
+                    { withCredentials: true } // Include credentials
+                );
+               
+                console.log(response.data.message);
+                toast.success("role Updated to successfully ");
+                // Clear state
+                setUpdatingRoleUser(null);
+                setNewRole('');
+            } catch (error) {
+                console.error('Error updating user role:', error);
             }
         }
     };
 
 
     return (
-        <div className="flex justify-center items-center flex-col h-screen">
+        <div className="flex justify-center items-center flex-col ">
            <Title title={"All User"}/>
             <div className="w-full max-w-5xl mt-16"> {/* Added margin-top to avoid navbar overlap */}
                 <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
@@ -92,6 +122,13 @@ export default function GetAllUser() {
                                 <td className="px-6 py-4 text-sm text-gray-700">{user.email}</td>
                                 <td className="px-6 py-4 text-sm text-gray-700">{user.role}</td>
                                 <td className="px-6 py-4 text-sm text-gray-700 flex space-x-2">
+                                    <button
+                                        className="bg-yellow-500 text-white px-3 py-1 rounded-md hover:bg-yellow-600"
+                                        onClick={() => handleUpdateRole(user)}
+                                    >
+                                        Update Role
+                                    </button>
+ 
                                     <button
                                         className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600"
                                         onClick={() => handleUpdate(user)}
@@ -140,6 +177,7 @@ export default function GetAllUser() {
                                 onChange={(e) => setUpdatedEmail(e.target.value)}
                             />
                         </div>
+                        
                         <div className="flex space-x-4">
                             <button
                                 type="submit"
@@ -151,6 +189,47 @@ export default function GetAllUser() {
                                 type="button"
                                 className="bg-gray-500 text-white px-3 py-1 rounded-md hover:bg-gray-600"
                                 onClick={() => setEditingUser(null)}
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            )}
+
+
+
+            {/* Role Update Form */}
+            {updatingRoleUser && (
+                <div className="fixed inset-0 flex justify-center items-center bg-gray-900 bg-opacity-50 z-50">
+                    <form onSubmit={handleSubmitRoleUpdate} className="bg-white p-6 rounded-lg shadow-lg">
+                        <h3 className="text-lg font-semibold mb-4">Update Role for {updatingRoleUser.name}</h3>
+                        <div className="mb-4">
+                            <label htmlFor="role" className="block text-sm font-medium text-gray-700">
+                                Role
+                            </label>
+                            <select
+                                id="role"
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                                value={newRole}
+                                onChange={(e) => setNewRole(e.target.value)}
+                            >
+                                <option value="user">User</option>
+                                <option value="subAdmin">Sub Admin</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                        <div className="flex space-x-4">
+                            <button
+                                type="submit"
+                                className="bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600"
+                            >
+                                Save
+                            </button>
+                            <button
+                                type="button"
+                                className="bg-gray-500 text-white px-3 py-1 rounded-md hover:bg-gray-600"
+                                onClick={() => setUpdatingRoleUser(null)}
                             >
                                 Cancel
                             </button>

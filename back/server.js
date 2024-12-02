@@ -13,13 +13,13 @@ const orderRoutes = require('./routes/orderRoutes');
 const messageRoutes = require('./routes/messageRoutes');
 const favoritesRoutes = require('./routes/favorites');
 const paymentRoutes = require('./routes/Payment');
-
+const userRoleController = require('./controllers/userRoleController')
 // const { protect } = require('../middleware/authMiddleware');
 // const { createNote, getNotes, updateNote, deleteNote } = require('../controllers/noteController');
-
-dotenv.config();
+ 
+dotenv.config(); 
 connectDB();
-
+  
 const app = express();
 app.use(cors({
     origin: 'http://localhost:3000', // Replace with your frontend URL
@@ -27,12 +27,14 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(cookieParser());  
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', authRoutes); 
 app.use('/api/messages', messageRoutes);
 app.use('/api/products', productRoutes)
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes)
 app.use('/api/users',userCredentialRoute)
+app.use('/api/role', userRoleController)
+
 app.use('/api/favorites', favoritesRoutes);
 app.use('/payment', paymentRoutes);
 app.use('/uploads',express.static(path.join(__dirname,"uploads")))

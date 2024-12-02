@@ -154,7 +154,7 @@ export default function Products() {
             <div className="pt-6">
                 <div className="flex justify-center">
                     <div className="w-full max-w-full">
-                        <h1 className="text-3xl font-bold text-center mb-6">Product List</h1>
+                        <h1 className="text-3xl font-bold text-center mb-6 text-white">Product List</h1>
                         <table className="table-auto w-full bg-white shadow-lg rounded-lg">
                             <thead>
                                 <tr className="bg-blue-500 text-white">

@@ -20,9 +20,29 @@ const GetAllOrders = () => {
         fetchOrders();
     }, []);
 
-    const handleEdit = (orderId) => {
-        console.log('Edit order', orderId);
+    const handleEdit = async (orderId) => {
+        try {
+            const response = await axios.put(
+                `http://localhost:5000/api/orders/${orderId}/deliver`,
+                {},
+                { withCredentials: true }
+            );
+
+            if (response.status === 200) {
+                toast.success('Order marked as delivered');
+                // Update the order in the state
+                setOrders((prevOrders) =>
+                    prevOrders.map((order) =>
+                        order._id === orderId ? { ...order, isDelivered: true, deliveredAt: response.data.deliveredAt } : order
+                    )
+                );
+            }
+        } catch (error) {
+            console.error('Error updating delivery status:', error);
+            toast.error('Failed to update delivery status');
+        }
     };
+
 
     const handleDelete = async (orderId) => {
         try {
@@ -96,7 +116,7 @@ const GetAllOrders = () => {
                                         onClick={() => handleEdit(order._id)}
                                         className="text-blue-500 hover:text-blue-700 mr-2"
                                     >
-                                        Edit
+                                        Mark Delivered
                                     </button>
                                     <button
                                         onClick={() => handleDelete(order._id)}

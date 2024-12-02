@@ -139,7 +139,7 @@ const updateOrderToPaid = async (req, res) => {
 // @access  Private/Admin
 const updateOrderToDelivered = async (req, res) => {
     const order = await Order.findById(req.params.id);
-
+    if (order.isPaid === true){
     if (order) {
         order.isDelivered = true;
         order.deliveredAt = Date.now();
@@ -149,6 +149,9 @@ const updateOrderToDelivered = async (req, res) => {
     } else {
         res.status(404).json('Order not found');
     }
+}else{
+        res.status(404).json('Order must be first paid to delivered');
+}
 };
 
 
