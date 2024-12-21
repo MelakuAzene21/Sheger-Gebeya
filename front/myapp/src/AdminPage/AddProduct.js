@@ -167,8 +167,10 @@ import React, { useState } from 'react';
 import { useAddProductMutation } from '../services/productsApi';
 import toast from 'react-hot-toast';
 import Title from '../Layout/Title';
+import { useNavigate } from 'react-router-dom';
 
 const AddProduct = () => {
+    const navigate=useNavigate()
     const initialFormData = {
         name: '',
         description: '',
@@ -269,6 +271,12 @@ const AddProduct = () => {
     return (
         <div className="max-w-md mx-auto mt-10">
             <Title title={"Add Products"}/>
+            <button
+                onClick={() => navigate(-1)} // Go back in history
+                className="px-4 py-2 bg-indigo-500 text-white rounded shadow hover:bg-indigo-600"
+            >
+                Go Back
+            </button>
             <h1 className="text-3xl font-semibold mb-6 text-center text-white">Add New Product</h1>
             <form className="bg-white shadow-lg rounded px-8 pt-6 pb-8 mb-4" onSubmit={handleSubmit}>
                 <div className="mb-4">

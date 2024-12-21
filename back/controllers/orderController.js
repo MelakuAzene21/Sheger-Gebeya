@@ -105,9 +105,66 @@ const getMyOrders = async (req, res) => {
 // @desc    Get all orders
 // @route   GET /api/orders
 // @access  Private/Admin
+
+
+
+// const getAllOrders = async (req, res) => {
+//     const orders = await Order.find({}).populate('user', 'id name').sort({ createdAt: -1 });
+//     res.json(orders);
+// };
+
+
 const getAllOrders = async (req, res) => {
-    const orders = await Order.find({}).populate('user', 'id name').sort({ createdAt: -1 });
-    res.json(orders);
+    try {
+        let orders;
+
+        if (req.user.role === 'admin') {
+            // Admin can view all orders
+            orders = await Order.find({})
+                .populate('user', 'id name')
+                .populate('orderItems.product', 'name addedBy') // Populate product details
+                .sort({ createdAt: -1 });
+        } else if (req.user.role === 'subAdmin') {
+            // SubAdmin can view orders containing their products
+            orders = await Order.find({})
+                .populate('user', 'id name')
+                .populate('orderItems.product', 'name addedBy') // Populate product details
+                .sort({ createdAt: -1 });
+
+            // Filter orders to only include those with products added by the subAdmin
+            orders = await Promise.all(
+                orders.map(async (order) => {
+                    const filteredOrderItems = await Promise.all(
+                        order.orderItems.map(async (item) => {
+                            const product = item.product; // Get the populated product directly from item
+                            if (product && product.addedBy && product.addedBy.toString() === req.user.id.toString()) {
+                                return item; // Only return item if it's added by the subAdmin
+                            }
+                            return null;
+                        })
+                    );
+
+                    // Keep the order only if there are relevant products for the subAdmin
+                    const validItems = filteredOrderItems.filter(item => item !== null);
+                    if (validItems.length > 0) {
+                        order.orderItems = validItems;
+                        return order;
+                    }
+                    return null; // Return null if no valid items for subAdmin
+                })
+            );
+
+            // Remove any orders that do not have valid items for the subAdmin
+            orders = orders.filter(order => order !== null);
+        } else {
+            return res.status(403).json({ message: 'Access denied.' });
+        }
+
+        res.status(200).json(orders);
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+        res.status(500).json({ message: 'Error fetching orders', error: error.message });
+    }
 };
 
 // @desc    Update order to paid

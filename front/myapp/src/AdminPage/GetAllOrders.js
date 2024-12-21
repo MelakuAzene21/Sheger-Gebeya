@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import Title from '../Layout/Title';
+import { useNavigate } from 'react-router-dom';
 
 const GetAllOrders = () => {
     const [orders, setOrders] = useState([]);
-
+const navigate=useNavigate()
     useEffect(() => {
         const fetchOrders = async () => {
             try {
@@ -64,6 +65,12 @@ const GetAllOrders = () => {
   <Title title={"All Orders"}/>
             {/* Table now spans the full width */}
             <div className="w-full max-h-[500px] overflow-y-auto">
+                <button
+                    onClick={() => navigate(-1)} // Go back in history
+                    className="px-4 py-2 bg-indigo-500 text-white rounded shadow hover:bg-indigo-600"
+                >
+                    Go Back
+                </button>
                 <table className="min-w-full  divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                         <tr>

@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux'; // For accessing the user role
 import { useEffect } from 'react';
 import Title from '../Layout/Title';
 const AdminJobs = () => {
+   
     const handleMenuItemClick = () => {
         console.log('Menu item clicked');
     };
@@ -27,14 +28,14 @@ const AdminJobs = () => {
                    
                 <div className="bg-blue-500 text-white text-center py-4 rounded-t-lg">
                         <Title title={"Admin Home Page"} />
-                    <h1 className="text-2xl font-bold">Admin Panel</h1>
-                    <p className="text-sm">Manage your e-commerce platform effectively</p>
+                     <h1 className="text-2xl font-bold">Admin Panel</h1>
+                    <p className="text-sm">Manage your E-commerce platform effectively</p>
                 </div>
                 <ul className="divide-y divide-gray-300">
                     <li className="p-4 hover:bg-gray-100 flex items-center cursor-pointer">
                         <FaHome className="mr-3 text-blue-500" />
                         <Link to="/dashboard" className="font-medium text-gray-700 hover:text-blue-500" onClick={handleMenuItemClick}>
-                            Dashboard
+                            Reports
                         </Link>
                     </li>
                     <li className="p-4 hover:bg-gray-100 flex items-center cursor-pointer">
@@ -73,13 +74,19 @@ const AdminJobs = () => {
                     <Title title={"Sub Admin Home Page"} />
                     <div className="bg-blue-500 text-white text-center py-4 rounded-t-lg">
                         <h1 className="text-2xl font-bold">Sub Admin Panel</h1>
-                        <p className="text-sm text-red-500 font-serif font-bold">You can only add ,edit and delete product</p>
+                        <p className="text-sm text-red-500 font-serif font-bold">You can only add ,edit and delete Your own product</p>
                     </div>
                     <ul className="divide-y divide-gray-300">
                         <li className="p-4 hover:bg-gray-100 flex items-center cursor-pointer">
                             <FaHome className="mr-3 text-blue-500" />
                             <Link to="/dashboard" className="font-medium text-gray-700 hover:text-blue-500" onClick={handleMenuItemClick}>
-                                Dashboard
+                                Report
+                            </Link>
+                        </li>
+                        <li className="p-4 hover:bg-gray-100 flex items-center cursor-pointer">
+                            <FaCar className="mr-3 text-yellow-500" />
+                            <Link to="/allOrders" className="font-medium text-gray-700 hover:text-yellow-500" onClick={handleMenuItemClick}>
+                                Manage Orders
                             </Link>
                         </li>
                         <li className="p-4 hover:bg-gray-100 flex items-center cursor-pointer">

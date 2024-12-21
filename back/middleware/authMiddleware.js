@@ -1,3 +1,4 @@
+//middleware/authMiddleWare.js
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const mongoose = require('mongoose')

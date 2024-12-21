@@ -116,10 +116,12 @@ const upload = multer({
 });
 
 // POST route to add a product (with multiple image uploads)
-router.post('/add', protect, admin, upload.array('images', 5), async (req, res) => {
+router.post('/add', protect,  upload.array('images', 5), async (req, res) => {
     try {
-        console.log(req.files); // Log this to check if files are being uploaded
-
+        // Check if the user is authorized to add products
+        if (req.user.role !== 'admin' && req.user.role !== 'subAdmin') {
+            return res.status(403).json({ message: 'Access denied. Only admins and subAdmins can add products.' });
+        }
         const {
             name,
             description,
@@ -152,7 +154,8 @@ router.post('/add', protect, admin, upload.array('images', 5), async (req, res) 
             Stock,
             rating,
             numReviews,
-            specifications: parsedSpecifications // Save parsed specifications
+            specifications: parsedSpecifications ,// Save parsed specifications
+            addedBy: req.user.id // Store the user ID
 
         });
 
@@ -166,7 +169,7 @@ router.post('/add', protect, admin, upload.array('images', 5), async (req, res) 
 
 
 // Update product route
-router.put('/:id', protect, admin, upload.single('image'), async (req, res) => {
+router.put('/:id', protect, upload.single('image'), async (req, res) => {
     try {
         const { name, description, price, category, Stock, brand } = req.body;
 
@@ -175,6 +178,15 @@ router.put('/:id', protect, admin, upload.single('image'), async (req, res) => {
 
         const updatedFields = { name, description, price, category, Stock, brand };
         if (image) updatedFields.image = image;
+
+        // Check permissions
+        if (
+            req.user.role !== 'admin' && // If not an admin
+            (req.user.role === 'subAdmin' && product.createdBy.toString() !== req.user._id.toString()) // SubAdmin but not the creator
+        ) {
+            return res.status(403).json({ message: 'Not authorized to delete this product' });
+        }
+
 
         const updatedProduct = await Product.findByIdAndUpdate(
             req.params.id,
@@ -194,14 +206,30 @@ router.put('/:id', protect, admin, upload.single('image'), async (req, res) => {
 
 
 // GET all products
-router.get('/', async (req, res) => {
+router.get('/', protect, async (req, res) => {
     try {
-        const products = await Product.find();
+        // Assuming you have `req.user` populated via middleware (e.g., JWT or session)
+        // const { role, id } = req.user; // Extract user role and ID from the request
+
+        let products;
+
+        if (req.user.role === 'admin') {
+            // Admin can fetch all products
+            products = await Product.find();
+        } else if (req.user.role === 'subAdmin') {
+            // Sub-admin can fetch only their own products
+            products = await Product.find({ addedBy: req.user.id });
+        } else {
+            // Unauthorized role
+            return res.status(403).json({ message: 'Access denied.' });
+        }
+
         res.status(200).json(products);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching products', error });
     }
 });
+
 router.get('/item', async (req, res) => {
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 9;
@@ -321,8 +349,17 @@ router.get('/:id/brand', async (req, res) => {
 
 
 // DELETE a product by ID
-router.delete('/:id',protect,admin, async (req, res) => {
+router.delete('/:id',protect, async (req, res) => {
     try {
+        // Check permissions
+        if (
+            req.user.role !== 'admin' && // If not an admin
+            (req.user.role === 'subAdmin' && product.addedBy.toString() !== req.user._id.toString()) // SubAdmin but not the creator
+        ) {
+            return res.status(403).json({ message: 'Not authorized to delete this product' });
+        }
+
+
         const deletedProduct = await Product.findByIdAndDelete(req.params.id);
         if (!deletedProduct) {
             return res.status(404).json({ message: 'Product not found' });

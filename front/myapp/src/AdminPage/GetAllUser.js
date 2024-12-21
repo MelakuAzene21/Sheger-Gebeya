@@ -3,11 +3,12 @@ import { useEffect, useState } from 'react';
 import Title from '../Layout/Title';
 import axios from 'axios'
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 export default function GetAllUser() {
     const { data: users, error, isLoading } = useGetAllUsersQuery(); // Fetch all users
     const [deleteUser] = useDeleteUserMutation();
     const [updateProfile] = useUpdateProfileByAdminMutation(); // Mutation to update profile
-
+const navigate=useNavigate()
     const [editingUser, setEditingUser] = useState(null); // Holds the user being edited
     const [updatedName, setUpdatedName] = useState('');
     const [updatedEmail, setUpdatedEmail] = useState('');
@@ -103,7 +104,14 @@ export default function GetAllUser() {
     return (
         <div className="flex justify-center items-center flex-col ">
            <Title title={"All User"}/>
+           
             <div className="w-full max-w-5xl mt-16"> {/* Added margin-top to avoid navbar overlap */}
+                <button
+                    onClick={() => navigate(-1)} // Go back in history
+                    className="px-4 py-2 bg-indigo-500  absolute left-2 text-white rounded shadow hover:bg-indigo-600"
+                >
+                    Go Back
+                </button>
                 <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
                     <thead>
                         <tr>

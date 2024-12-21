@@ -11,9 +11,14 @@ exports.registerUser = async (req, res) => {
         return res.status(400).json({ message: 'User already exists' });
     }
 
-    const user = await User.create({ name, email, password });
+    // Check if any users already exist in the database
+    const existingUsers = await User.find();
+    // If no users exist, assign 'admin' role to the first user
+    const role = existingUsers.length === 0 ? 'admin' : 'user';
 
-    if (user) {
+    const user = await User.create({ name, email, password,role });
+
+    if (user) {   
         res.status(201).json("User Successfully Registered");
     } else {
         res.status(400).json({ message: 'Invalid user data' });

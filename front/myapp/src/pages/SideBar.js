@@ -39,7 +39,7 @@ const SideBar = ({ onMenuItemClick }) => {
                         <>
                             <li className="p-4 hover:bg-gray-700 flex items-center">
                                 <FaHome className="mr-3" />
-                                <Link to="/dashboard" onClick={handleMenuItemClick}>Dashboard</Link>
+                                <Link to="/dashboard" onClick={handleMenuItemClick}>Report</Link>
                             </li>
                             <li className="p-4 hover:bg-gray-700 flex items-center">
                                 <FaPlus className="mr-3" />
@@ -47,16 +47,38 @@ const SideBar = ({ onMenuItemClick }) => {
                             </li>
                             <li className="p-4 hover:bg-gray-700 flex items-center">
                                 <FaCar className="mr-3" />
-                                <Link to="/allOrders" onClick={handleMenuItemClick}>All User Orders</Link>
+                                <Link to="/allOrders" onClick={handleMenuItemClick}>Manage Orders</Link>
                             </li>
                             <li className="p-4 hover:bg-gray-700 flex items-center">
                                 <FaProductHunt className="mr-3" />
-                                <Link to="/products" onClick={handleMenuItemClick}>Show Product</Link>
+                                <Link to="/products" onClick={handleMenuItemClick}>Manage  Product</Link>
                             </li>
                             <li className="p-4 hover:bg-gray-700 flex items-center">
                                 <FaUser className="mr-3" />
-                                <Link to="/users" onClick={handleMenuItemClick}>Show Users</Link>
+                                <Link to="/users" onClick={handleMenuItemClick}>Manage  Users</Link>
                             </li>
+                        </>
+                    )}
+                    {/* Show these only for subAdmins */}
+                    {user?.role === 'subAdmin' && (
+                        <>
+                            <li className="p-4 hover:bg-gray-700 flex items-center">
+                                <FaHome className="mr-3" />
+                                <Link to="/dashboard" onClick={handleMenuItemClick}>Report</Link>
+                            </li>
+                            <li className="p-4 hover:bg-gray-700 flex items-center">
+                                <FaPlus className="mr-3" />
+                                <Link to="/products/add" onClick={handleMenuItemClick}>Add New Product</Link>
+                            </li>
+                            <li className="p-4 hover:bg-gray-700 flex items-center">
+                                <FaCar className="mr-3" />
+                                <Link to="/allOrders" onClick={handleMenuItemClick}>Manage Orders</Link>
+                            </li>
+                            <li className="p-4 hover:bg-gray-700 flex items-center">
+                                <FaProductHunt className="mr-3" />
+                                <Link to="/products" onClick={handleMenuItemClick}>Manage  Product</Link>
+                            </li>
+                           
                         </>
                     )}
 

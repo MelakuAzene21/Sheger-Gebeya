@@ -4,7 +4,7 @@ export default function Dashboard() {
     return (
         <>
         <Title title={"Dashboard Pages"}/>
-            <div className="mt-24 flex  justify-center items-center  bg-gray-300">Hello this is allowed only for ADMINS</div>
+            <h1 className="text-3xl font-bold  mt-7 text-green-500 text-center">Admin Summary</h1>
           <SalesChart/>
         </>
     )

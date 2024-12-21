@@ -101,7 +101,15 @@ const orderSchema = mongoose.Schema(
         timestamps: true,
     }
 );
-
+// To enable filtering based on the user who added the product, 
+// populate the products in `orderItems` with `addedBy` from the Product model
+orderSchema.methods.filterBySubAdminProducts = async function (subAdminId) {
+    const orderItems = this.orderItems.filter(async (item) => {
+        const product = await Product.findById(item.product);
+        return product.addedBy.toString() === subAdminId.toString();
+    });
+    return orderItems;
+};
 const Order = mongoose.model('Order', orderSchema);
 
 module.exports = Order;

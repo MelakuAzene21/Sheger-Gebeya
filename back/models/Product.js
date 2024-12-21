@@ -62,6 +62,11 @@ const productSchema = mongoose.Schema(
              required:false,
              ref: 'User',
          },
+        addedBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User', // Reference to the user who added the product
+            required: true
+        }
     },
     {
         timestamps: true,

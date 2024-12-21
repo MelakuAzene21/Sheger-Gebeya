@@ -18,7 +18,7 @@ const router = express.Router();
 router.route('/').post(protect, addOrderItems);
 
 // Get all orders (admin only)
-router.route('/').get(protect, admin, getAllOrders);
+router.route('/').get(protect,  getAllOrders);
 // Get logged in user orders
 router.route('/myorders').get(protect, getMyOrders)
 // Get order by ID

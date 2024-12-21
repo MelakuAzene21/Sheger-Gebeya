@@ -4,8 +4,9 @@ import { useDeleteProductMutation, useUpdateProductMutation } from '../services/
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import Title from '../Layout/Title';
-
+import { useNavigate } from 'react-router-dom';
 export default function Products() {
+    const navigate=useNavigate()
     const { data: products, error, isLoading } = useGetProductsQuery();
     const [deleteProduct] = useDeleteProductMutation();
     const [updateProduct] = useUpdateProductMutation(); // Mutation to update product
@@ -152,8 +153,16 @@ export default function Products() {
             )}
 
             <div className="pt-6">
+                <button
+                    onClick={() => navigate(-1)} // Go back in history
+                    className="px-4 py-2 bg-indigo-500 text-white rounded shadow hover:bg-indigo-600"
+                >
+                    Go Back
+                </button>
                 <div className="flex justify-center">
+                    
                     <div className="w-full max-w-full">
+                        <h2 className='text-white text-center'>There are {products.length} Products</h2>
                         <h1 className="text-3xl font-bold text-center mb-6 text-white">Product List</h1>
                         <table className="table-auto w-full bg-white shadow-lg rounded-lg">
                             <thead>
