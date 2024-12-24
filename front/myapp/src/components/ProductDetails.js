@@ -148,7 +148,10 @@ const ProductDetails = () => {
     const currentUserId = currentUser?._id;
     const { data: product, error, isLoading } = useGetProductByIdQuery(id);
     const { data: reviews1, isLoading1, error1 } = useGetReviewsQuery(id);
-
+    const BASE_URL =
+        process.env.NODE_ENV === 'production'
+            ? 'https://e-market-fnu1.onrender.com'
+            : process.env.REACT_APP_API_URL || 'http://localhost:5000';
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const [quantity, setQuantity] = useState(1);
     const [relatedProducts, setRelatedProducts] = useState([]);
@@ -182,7 +185,7 @@ const ProductDetails = () => {
             dispatch(addItemToCart({ ...product, quantity }));
             try {
                 await axios.post(
-                    'http://localhost:5000/api/cart',
+                    `${BASE_URL}/api/cart`,
                     { productId: product._id, quantity },
                     {
                         withCredentials: true, // Send cookies with request
@@ -219,7 +222,7 @@ const ProductDetails = () => {
     useEffect(() => {
         const fetchReviews = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/api/products/${id}/reviews`, {
+                const response = await axios.get(`${BASE_URL}/api/products/${id}/reviews`, {
                     withCredentials: true
                 });
                 setReviews(response.data);
@@ -252,7 +255,7 @@ const ProductDetails = () => {
         // Fetch related products based on the current product's category
         const fetchRelatedProducts = async () => {
             try {
-                const response = await fetch(`http://localhost:5000/api/products/${id}/related`);
+                const response = await fetch(`${BASE_URL}/api/products/${id}/related`);
                 const data = await response.json();
                 setRelatedProducts(data);
             } catch (error) {
@@ -262,7 +265,7 @@ const ProductDetails = () => {
 
         const fetchRelatedProductsBrand = async () => {
             try {
-                const response = await fetch(`http://localhost:5000/api/products/${id}/brand`);
+                const response = await fetch(`${BASE_URL}/api/products/${id}/brand`);
                 const data = await response.json();
                 setRelatedProductsBrand(data);
             } catch (error) {
@@ -282,7 +285,7 @@ const ProductDetails = () => {
     useEffect(() => {
         const checkFavoriteStatus = async (userId) => {
             try {
-                const response = await fetch(`http://localhost:5000/api/favorites/${userId}`);
+                const response = await fetch(`${BASE_URL}/api/favorites/${userId}`);
                 if (response.ok) {
                     const data = await response.json();
                     // Check if the current item ID is in the user's favorites
@@ -308,7 +311,7 @@ const ProductDetails = () => {
     useEffect(() => {
         const checkFavoriteStatus = async (userId) => {
             try {
-                const response = await fetch(`http://localhost:5000/api/favorites/${userId}/${id}`, { method: 'GET' });
+                const response = await fetch(`${BASE_URL}/api/favorites/${userId}/${id}`, { method: 'GET' });
                 if (response.ok) {
                     const data = await response.json();
                     setIsFavorite(data.length > 0); // Assuming it returns an array of favorites
@@ -335,7 +338,7 @@ const ProductDetails = () => {
         }
 
         try {
-            const response = await fetch(`http://localhost:5000/api/favorites/${user._id}/${id}`, {
+            const response = await fetch(`${BASE_URL}/api/favorites/${user._id}/${id}`, {
                 method:'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId: user._id }) // Send user ID in the body
@@ -425,7 +428,7 @@ const ProductDetails = () => {
             <div className="flex flex-col md:flex-row bg-gray-500 shadow-lg rounded-lg overflow-hidden">
                 <div className="md:w-1/2 p-4 relative">
                     <img
-                        src={`http://localhost:5000${product.images[selectedImageIndex]}`}
+                        src={`${BASE_URL}${product.images[selectedImageIndex]}`}
                         alt={product.name}
                         className="w-full h-[500px] object-cover rounded-lg hover:scale-105 transition-transform duration-300"
                     />
@@ -482,7 +485,7 @@ const ProductDetails = () => {
 
                             {/* Display the current image in fullscreen */}
                             <img
-                                src={`http://localhost:5000${product.images[selectedImageIndex]}`}
+                                src={`${BASE_URL}${product.images[selectedImageIndex]}`}
                                 alt="Fullscreen"
                                 className="w-auto h-full object-contain"
                             />
@@ -503,7 +506,7 @@ const ProductDetails = () => {
                         {product.images.map((image, index) => (
                             <img
                                 key={index}
-                                src={`http://localhost:5000${image}`}
+                                src={`${BASE_URL}${image}`}
                                 alt={`Preview ${index + 1}`}
                                 className={`w-20 h-20 object-cover cursor-pointer rounded-md ${index === selectedImageIndex ? 'ring-2 ring-blue-500' : ''}`}
                                 onClick={() => setSelectedImageIndex(index)}
@@ -652,7 +655,7 @@ const ProductDetails = () => {
                                 className="bg-white border border-gray-200 rounded-lg shadow-lg"
                             >
                                 <Link to={`/products/${relatedProduct._id}`}> <img
-                                    src={`http://localhost:5000${relatedProduct.images[0]}`}
+                                    src={`${BASE_URL}${relatedProduct.images[0]}`}
                                     alt={relatedProduct.name}
                                     className="w-full h-48 object-cover"
                                 /></Link>
@@ -710,12 +713,12 @@ const ProductDetails = () => {
                             >
                                 <Link to={`/products/${relatedProductBrand._id}`}>
                                     <img
-                                        src={`http://localhost:5000${relatedProductBrand.images[0]}`}
+                                        src={`${BASE_URL}${relatedProductBrand.images[0]}`}
                                         alt={relatedProductBrand.name}
                                         className="w-full h-48 object-cover"
                                     />
                                 </Link>
-                               
+                                
                                 <div className="p-4">
                                     <h2 className="text-lg font-semibold mb-2">
                                         {relatedProductBrand.name}

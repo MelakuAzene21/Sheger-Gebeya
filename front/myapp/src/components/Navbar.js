@@ -172,13 +172,16 @@ const Navbar = () => {
     const navigate = useNavigate();
     const distinctItemsCount = cartItems.length;
     const [wishlistCount, setWishlistCount] = useState(0);
-
+    const BASE_URL =
+        process.env.NODE_ENV === 'production'
+            ? 'https://e-market-fnu1.onrender.com'
+            : process.env.REACT_APP_API_URL || 'http://localhost:5000';
     // Fetch wishlist count when component mounts or when user changes
     useEffect(() => {
         const fetchWishlistCount = async () => {
             if (user) {
                 try {
-                    const response = await fetch(`http://localhost:5000/api/favorites/${user._id}`);
+                    const response = await fetch(`${BASE_URL}/api/favorites/${user._id}`);
                     if (response.ok) {
                         const data = await response.json();
                         setWishlistCount(data.length); // Set the count of items

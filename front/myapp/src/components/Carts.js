@@ -8,7 +8,10 @@ import Title from '../Layout/Title';
 const Cart = () => {
     const { cartItems } = useSelector((state) => state.cart);
     const dispatch = useDispatch();
-
+    const BASE_URL =
+        process.env.NODE_ENV === 'production'
+            ? 'https://e-market-fnu1.onrender.com'
+            : process.env.REACT_APP_API_URL || 'http://localhost:5000';
     // Calculate total quantity and total price
     const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
     const totalPrice = cartItems.reduce((acc, item) => acc + item.quantity * item.price, 0);
@@ -55,7 +58,7 @@ return(
                     {cartItems.map((item) => (
                         <div key={item._id} className="flex items-center justify-between mb-6 p-4 border-b border-gray-200">
                             <div className="flex items-center">
-                                <img src={`http://localhost:5000${item.images[0]}`} alt={item.name} className="w-20 h-20 object-cover rounded-lg mr-6" />
+                                <img src={`${BASE_URL}${item.images[0]}`} alt={item.name} className="w-20 h-20 object-cover rounded-lg mr-6" />
                                 <div>
                                     <h3 className="font-semibold text-lg text-gray-800">{item.name}</h3>
                                     <p className="text-sm text-gray-600">Price: ${item.price}</p>

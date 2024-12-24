@@ -5,6 +5,12 @@ import { v4 as uuidv4 } from 'uuid';  // Import uuid
 const PaymentButton = () => {
     const [loading, setLoading] = useState(false);
     const [paymentUrl, setPaymentUrl] = useState('');
+    // Dynamically select API URL based on environment
+    
+    const API_URL =
+        process.env.NODE_ENV === 'production'
+            ? 'https://e-market-fnu1.onrender.com'
+            : process.env.REACT_APP_API_URL;
 
     const handlePayment = async () => {
         setLoading(true);
@@ -25,7 +31,7 @@ const PaymentButton = () => {
                 throw new Error('Invalid email format');
             }
 
-            const response = await axios.post('http://localhost:5000/payment/initialize', paymentData);
+            const response = await axios.post(`${API_URL}/payment/initialize`, paymentData);
             setPaymentUrl(response.data.payment_url);
             window.location.href = response.data.payment_url; // Redirect to Chapa payment page
         } catch (error) {

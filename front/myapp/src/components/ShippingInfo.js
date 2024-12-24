@@ -32,6 +32,11 @@ const ShippingInfo = () => {
     const taxPrice = totalPrice * 0.15;
     const total = totalPrice + shippingPrice + taxPrice;
 
+    const BASE_URL =
+        process.env.NODE_ENV === 'production'
+            ? 'https://e-market-fnu1.onrender.com'
+            : process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
     const handlePayment = async () => {
         // Check if the cart is empty
         if (cartItems.length === 0) {
@@ -67,7 +72,7 @@ const ShippingInfo = () => {
                     tx_ref: transactionRef,
                 };
 
-                const response = await axios.post('http://localhost:5000/payment/initialize', paymentData);
+                const response = await axios.post(`${BASE_URL}/payment/initialize`, paymentData);
 
                 if (response.data && response.data.payment_url) {
                     setPaymentUrl(response.data.payment_url);
@@ -116,7 +121,7 @@ const ShippingInfo = () => {
                             cartItems.map((item) => (
                                 <div key={item._id} className="flex justify-between mb-4">
                                     <div className="flex">
-                                        <img src={`http://localhost:5000${item.images[0]}`} alt={item.name} className="w-16 h-16 object-cover rounded-lg mr-4" />
+                                        <img src={`${BASE_URL}${item.images[0]}`} alt={item.name} className="w-16 h-16 object-cover rounded-lg mr-4" />
                                         <p>{item.name}</p>
                                     </div>
                                     <p>{item.quantity} x ${item.price} = ${item.quantity * item.price}</p>

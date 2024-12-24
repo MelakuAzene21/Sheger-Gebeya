@@ -37,7 +37,10 @@ const navigate=useNavigate()
 
     // Ensure users are always in array format
     const userArray = Array.isArray(users) ? users : [users];
-
+    const BASE_URL =
+        process.env.NODE_ENV === 'production'
+            ? 'https://e-market-fnu1.onrender.com'
+            : process.env.REACT_APP_API_URL || 'http://localhost:5000';
     const handleDelete = async (userId) => {
         try {
             await deleteUser(userId);  // Call the mutation to delete the user
@@ -84,7 +87,7 @@ const navigate=useNavigate()
             try {
                 // Use axios for the role update request
                 const response = await axios.put(
-                    `http://localhost:5000/api/role/${updatingRoleUser._id}`,
+                    `${BASE_URL}/api/role/${updatingRoleUser._id}`,
                     { role: newRole },
                     { withCredentials: true } // Include credentials
                 );

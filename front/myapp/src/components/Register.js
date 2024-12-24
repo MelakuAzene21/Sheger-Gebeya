@@ -7,10 +7,16 @@ const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+
+  const BASE_URL =
+    process.env.NODE_ENV === 'production'
+      ? 'https://e-market-fnu1.onrender.com'
+      : process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
     const submitHandler = async (e) => {
         e.preventDefault();
         try {
-            const { data } = await axios.post('http://localhost:5000/api/auth/register', {
+            const { data } = await axios.post(`${BASE_URL}/api/auth/register`, {
                 name, email, password
             }, {
                 withCredentials: true, // Include credentials in requests

@@ -98,11 +98,15 @@ import { useNavigate } from "react-router-dom";
 export function SalesChart() {
     const [orders, setOrders] = useState([]);
     const [products, setProducts] = useState([]);
+    const BASE_URL =
+        process.env.NODE_ENV === 'production'
+            ? 'https://e-market-fnu1.onrender.com'
+            : process.env.REACT_APP_API_URL || 'http://localhost:5000';
   const navigate=useNavigate();
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/api/orders", { withCredentials: true });
+                const response = await axios.get(`${BASE_URL}/api/orders`, { withCredentials: true });
                 setOrders(response.data);
             } catch (error) {
                 console.error("Error fetching orders:", error);
@@ -114,7 +118,7 @@ export function SalesChart() {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/api/products", { withCredentials: true });
+                const response = await axios.get(`${BASE_URL}/api/products`, { withCredentials: true });
                 setProducts(response.data);
             } catch (error) {
                 console.error("Error fetching products:", error);

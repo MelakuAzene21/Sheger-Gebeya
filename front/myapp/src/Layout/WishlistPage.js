@@ -5,7 +5,12 @@ import Title from './Title'
 const WishlistPage = () => {
     const user = useSelector((state) => state.auth.user);
     const [wishlistItems, setWishlistItems] = useState([]);
-    const baseUrl = 'http://localhost:5000'; // Base URL for the server
+
+    const baseUrl =
+        process.env.NODE_ENV === 'production'
+            ? 'https://e-market-fnu1.onrender.com'
+            : process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
 
     // Fetch wishlist items when the component mounts
     useEffect(() => {

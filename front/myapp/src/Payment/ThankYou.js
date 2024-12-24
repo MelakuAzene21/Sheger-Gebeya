@@ -5,6 +5,10 @@ const SuccessPage = () => {
     const location = useLocation();
     const [transactionData, setTransactionData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const BASE_URL =
+        process.env.NODE_ENV === 'production'
+            ? 'https://e-market-fnu1.onrender.com' // Production URL
+            : process.env.REACT_APP_API_URL || 'http://localhost:5000'; // Local development URL
 
     useEffect(() => {
         // Extract tx_ref from the query params
@@ -20,7 +24,7 @@ const SuccessPage = () => {
         // Fetch the message from the callback route
         const verifyTransaction = async () => {
             try {
-                const response = await fetch(`http://localhost:5000/payment/verify-transaction/${txRef}`, {
+                const response = await fetch(`${BASE_URL}/payment/verify-transaction/${txRef}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -110,7 +114,7 @@ const SuccessPage = () => {
                         ) : (
                             <p className="text-center text-gray-500">No transaction data found.</p>
                         )}
-                    </div>
+                    </div> 
                 )}
             </div>
         </div>

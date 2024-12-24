@@ -8,11 +8,14 @@ const ResetPassword = () => {
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
-
+    const BASE_URL =
+        process.env.NODE_ENV === 'production'
+            ? 'https://e-market-fnu1.onrender.com'
+            : process.env.REACT_APP_API_URL || 'http://localhost:5000';
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.put(`http://localhost:5000/api/auth/reset-password/${token}`, { password });
+            await axios.put(`${BASE_URL}/api/auth/reset-password/${token}`, { password });
             setMessage('Password has been reset successfully.');
             navigate('/login');
         } catch (error) {

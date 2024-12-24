@@ -8,14 +8,17 @@ const UpdateProduct = ({ product, onProductUpdated }) => {
     const [category, setCategory] = useState(product.category);
     const [stock, setStock] = useState(product.stock);
     const [image, setImage] = useState(product.image);
-
+    const BASE_URL =
+        process.env.NODE_ENV === 'production'
+            ? 'https://e-market-fnu1.onrender.com'
+            : process.env.REACT_APP_API_URL || 'http://localhost:5000';
     const handleUpdate = async (e) => {
         e.preventDefault();
 
         const updatedProduct = { name, description, price, category, stock, image };
 
         try {
-            const response = await axios.put(`http://localhost:5000/api/products/${product._id}`, updatedProduct, { withCredentials: true });
+            const response = await axios.put(`${BASE_URL}/api/products/${product._id}`, updatedProduct, { withCredentials: true });
             onProductUpdated(response.data);  // Pass the updated product back to the parent
         } catch (error) {
             console.error('Error updating product:', error);

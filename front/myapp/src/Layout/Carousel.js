@@ -5,10 +5,15 @@ const Carousel = () => {
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-
+  // Dynamically set the base URL based on the environment
+  const BASE_URL =
+    process.env.NODE_ENV === 'production'
+      ? 'https://e-market-fnu1.onrender.com'
+      : process.env.REACT_APP_API_URL || 'http://localhost:5000';
+      
   const fetchCarouselProducts = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/products/random?limit=15');
+      const response = await axios.get(`${BASE_URL}/api/products/random?limit=15`);
       setProducts(response.data);
     } catch (error) {
       console.error('Error fetching carousel products:', error);
@@ -48,7 +53,7 @@ const Carousel = () => {
               <div className="carousel-item w-full flex flex-col items-center justify-center h-full">
                 <img
                   className="object-cover h-80 w-full"
-                  src={`http://localhost:5000${products[currentIndex].images[0]}`}
+                    src={`${BASE_URL}${products[currentIndex].images[0]}`}
                   alt={products[currentIndex].name}
                 />
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 p-4">

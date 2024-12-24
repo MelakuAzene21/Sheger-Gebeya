@@ -7,7 +7,10 @@ const OrderDetails = () => {
     const { id } = useParams();
     const { data: order, isLoading: orderLoading, isError: orderError, error: orderErrorMessage } = useGetOrderDetailsQuery(id);
     const { data: user, isLoading: userLoading, isError: userError, error: userErrorMessage } = useGetCurrentUserQuery(order?.user); // Fetch user by ID
-
+    const BASE_URL =
+        process.env.NODE_ENV === 'production'
+            ? 'https://e-market-fnu1.onrender.com'
+            : process.env.REACT_APP_API_URL || 'http://localhost:5000';
     if (orderLoading || userLoading) return <p className="text-center text-lg font-semibold text-blue-500">Loading...</p>;
     if (orderError) return <p className="text-center text-lg font-semibold text-red-500">Error: {orderErrorMessage.message}</p>;
     if (userError) return <p className="text-center text-lg font-semibold text-red-500">Error: {userErrorMessage.message}</p>;
@@ -66,7 +69,7 @@ const OrderDetails = () => {
                         <div key={item.product} className="flex items-center justify-between py-4">
                             <div className="flex items-center space-x-4">
                                 <img
-                                    src={`http://localhost:5000${item.images[0]}`}
+                                    src={`${BASE_URL}${item.images[0]}`}
                                     alt={item.name}
                                     className="w-16 h-16 rounded-lg object-cover"
                                 />

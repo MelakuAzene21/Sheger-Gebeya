@@ -3,12 +3,15 @@ import axios from 'axios';
 import Title from './Title'
 const Messages = () => {
     const [messages, setMessages] = useState([]);
-
+    const BASE_URL =
+        process.env.NODE_ENV === 'production'
+            ? 'https://e-market-fnu1.onrender.com'
+            : process.env.REACT_APP_API_URL || 'http://localhost:5000';
     // Fetch messages from the backend
     useEffect(() => {
         const fetchMessages = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/messages/all');
+                const response = await axios.get(`${BASE_URL}/api/messages/all`);
                 setMessages(response.data);
             } catch (error) {
                 console.error('Error fetching messages:', error);

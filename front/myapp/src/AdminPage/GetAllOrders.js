@@ -6,11 +6,15 @@ import { useNavigate } from 'react-router-dom';
 
 const GetAllOrders = () => {
     const [orders, setOrders] = useState([]);
+    const BASE_URL =
+        process.env.NODE_ENV === 'production'
+            ? 'https://e-market-fnu1.onrender.com'
+            : process.env.REACT_APP_API_URL || 'http://localhost:5000';
 const navigate=useNavigate()
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/orders', // Replace with your API endpoint
+                const response = await axios.get(`${BASE_URL}/api/orders`, // Replace with your API endpoint
                     { withCredentials: true }
                 );
                 setOrders(response.data);
@@ -24,7 +28,7 @@ const navigate=useNavigate()
     const handleEdit = async (orderId) => {
         try {
             const response = await axios.put(
-                `http://localhost:5000/api/orders/${orderId}/deliver`,
+                `${BASE_URL}/api/orders/${orderId}/deliver`,
                 {},
                 { withCredentials: true }
             );
@@ -47,7 +51,7 @@ const navigate=useNavigate()
 
     const handleDelete = async (orderId) => {
         try {
-            const response = await axios.delete(`http://localhost:5000/api/orders/${orderId}`,
+            const response = await axios.delete(`${BASE_URL}/api/orders/${orderId}`,
                 { withCredentials: true }
             );
             if (response.status === 200) {

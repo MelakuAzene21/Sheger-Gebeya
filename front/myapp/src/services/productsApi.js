@@ -1,10 +1,19 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
+// Dynamically set the base URL based on the environment
+const BASE_URL =
+    process.env.NODE_ENV === 'production'
+        ? 'https://e-market-fnu1.onrender.com/api' // Production URL
+        : process.env.REACT_APP_API_URL || 'http://localhost:5000/api'; // Local development URL
+
+
+
+
 // Define the API slice
 export const productsApi = createApi({
     reducerPath: 'productsApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: 'http://localhost:5000/api',  // Adjust this base URL to match your backend's base URL
+        baseUrl: BASE_URL,  // Adjust this base URL to match your backend's base URL
         credentials:'include'
     }),
     tagTypes: ['User', 'Product','Reviews'],  // Add tag types here

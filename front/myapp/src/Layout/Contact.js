@@ -6,6 +6,11 @@ const ContactUs = () => {
     const [formData, setFormData] = useState({ name: '', email: '', message: '' });
     const [responseMessage, setResponseMessage] = useState('');
 
+    const BASE_URL =
+        process.env.NODE_ENV === 'production'
+            ? 'https://e-market-fnu1.onrender.com'
+            : process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
@@ -14,7 +19,7 @@ const ContactUs = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch('http://localhost:5000/api/messages/submit', {
+            const response = await fetch(`${BASE_URL}/api/messages/submit`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),

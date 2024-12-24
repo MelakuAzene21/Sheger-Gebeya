@@ -7,11 +7,15 @@ const ReviewsDetail = ({ productId }) => {  // Accept productId as a prop
     const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const BASE_URL =
+        process.env.NODE_ENV === 'production'
+            ? 'https://e-market-fnu1.onrender.com' // Production URL
+            : process.env.REACT_APP_API_URL || 'http://localhost:5000'; // Local development URL
 
     useEffect(() => {
         const fetchReviews = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/api/products/${productId}/reviews`, {
+                const response = await axios.get(`${BASE_URL}/api/products/${productId}/reviews`, {
                     withCredentials: true
                 });
                 setReviews(response.data);
