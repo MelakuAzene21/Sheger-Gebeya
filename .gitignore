@@ -1,3 +1,22 @@
 /front/node_modules
 /back/node_modules
-/build
+
+
+
+
+# Environment files
+.env
+
+# Logs
+logs/
+*.log
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# IDE-specific files
+.idea/
+.vscode/
+*.swp
+
