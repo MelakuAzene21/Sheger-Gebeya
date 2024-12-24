@@ -5,8 +5,8 @@
 
 
 # Environment files
-.env
-
+/back/.env
+/front/myapp/.env
 # Logs
 logs/
 *.log
