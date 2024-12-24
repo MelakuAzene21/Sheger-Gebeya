@@ -21,10 +21,16 @@ dotenv.config();
 connectDB();
   
 const app = express();
-app.use(cors({
-    origin: 'http://localhost:3000', // Replace with your frontend URL
+// Set up dynamic CORS
+const corsOptions = {
+    origin: process.env.NODE_ENV === 'production'
+        ? 'https://e-market-hbf7.onrender.com'
+        : 'http://localhost:3000',
     credentials: true, // Allow cookies to be sent
-}));
+};
+
+app.use(cors(corsOptions));
+
 app.use(express.json());
 app.use(cookieParser());  
 app.use('/api/auth', authRoutes); 
