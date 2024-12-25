@@ -325,7 +325,10 @@ const ProductsPage = () => {
     const handleCategoryClick = (cat) => {
         setCategory(cat === 'All' ? '' : cat);
     };
-
+    const BASE_URL =
+        process.env.NODE_ENV === 'production'
+            ? 'https://e-market-fnu1.onrender.com'
+            : process.env.REACT_APP_API_URL || 'http://localhost:5000';
     const { data: user } = useGetCurrentUserQuery(); // Fetch current user info
     // Track favorite status for each item
     const [favoriteStatuses, setFavoriteStatuses] = useState({});
@@ -341,7 +344,7 @@ const ProductsPage = () => {
             if (!userId) return;
 
             try {
-                const response = await fetch(`http://localhost:5000/api/favorites/${userId}`);
+                const response = await fetch(`${BASE_URL}/api/favorites/${userId}`);
                 if (response.ok) {
                     const favoriteData = await response.json();
                     // Create a map of favorite statuses by productId
@@ -377,7 +380,7 @@ const ProductsPage = () => {
 
         try {
             await axios.post(
-                'http://localhost:5000/api/cart',
+                `${BASE_URL}/api/cart`,
                 { productId: product._id, quantity },
                 {
                     withCredentials: true, // Send cookies with request
@@ -398,7 +401,7 @@ const ProductsPage = () => {
         }
 
         try {
-            const response = await fetch(`http://localhost:5000/api/favorites/${user._id}/${productId}`, {
+            const response = await fetch(`${BASE_URL}/api/favorites/${user._id}/${productId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId: user._id }),
@@ -536,7 +539,7 @@ const ProductsPage = () => {
                         >
                             <Link to={`/products/${product._id}`} >                           
                             <img
-                                src={`http://localhost:5000${product.images[0]}`}
+                                src={`${BASE_URL}${product.images[0]}`}
                                 alt={product.name}
                                 className="w-full h-56 object-cover"
                             />
