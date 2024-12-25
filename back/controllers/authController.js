@@ -40,7 +40,7 @@ exports.loginUser = async (req, res) => {
         res.cookie('token', generateToken(user._id), { 
             httpOnly: true,   // Ensures the cookie is not accessible via JavaScript
             secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-            sameSite: 'Strict',  // Prevents CSRF attacks by ensuring the cookie is only sent for same-site requests
+            sameSite: 'None',  // Prevents CSRF attacks by ensuring the cookie is only sent for same-site requests
         });  
         res.json({
             _id: user._id,
