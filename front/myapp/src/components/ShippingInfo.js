@@ -35,7 +35,7 @@ const ShippingInfo = () => {
     const BASE_URL =
         process.env.NODE_ENV === 'production'
             ? 'https://e-market-fnu1.onrender.com'
-            : process.env.REACT_APP_API_URL || 'http://localhost:5000';
+            :'http://localhost:5000';
 
     const handlePayment = async () => {
         // Check if the cart is empty
@@ -72,8 +72,9 @@ const ShippingInfo = () => {
                     tx_ref: transactionRef,
                 };
 
-                const response = await axios.post(`${BASE_URL}/payment/initialize`, paymentData);
-
+                const response = await axios.post(`${BASE_URL}/payment/initialize`,paymentData, {
+                    withCredentials: true,
+                });
                 if (response.data && response.data.payment_url) {
                     setPaymentUrl(response.data.payment_url);
                     console.log('Redirecting to payment URL:', response.data.payment_url);

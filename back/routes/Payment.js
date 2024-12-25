@@ -4,7 +4,10 @@ const dotenv = require('dotenv');
 const Order = require('../models/orderModel');
 // Load environment variables
 dotenv.config();
-
+// Determine the base URL based on the environment
+const baseUrl = process.env.NODE_ENV === 'production'
+    ? 'https://e-market-hbf7.onrender.com'
+    : 'http://localhost:3000';
 const router = express.Router();
 
 router.post('/initialize', async (req, res) => {
@@ -24,7 +27,7 @@ router.post('/initialize', async (req, res) => {
             tx_ref,
             // callback_url: 'http://localhost:5000/payment/callback',
             callback_url: `https://3508-213-55-102-49.ngrok-free.app/payment/callback?tx_ref=${tx_ref}`,
-            return_url: `http://localhost:3000/thank-you?tx_ref=${tx_ref}`,
+            return_url: `${baseUrl}/thank-you?tx_ref=${tx_ref}`, // Dynamically set return_url
             customization: {
                 "title": "Purchase good"
                 

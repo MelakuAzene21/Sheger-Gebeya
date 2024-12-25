@@ -27,7 +27,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 const BASE_URL =
     process.env.NODE_ENV === 'production'
         ? 'https://e-market-fnu1.onrender.com/api' // Production URL
-        : process.env.REACT_APP_API_URL || 'http://localhost:5000/api'; // Local development URL
+        :'http://localhost:5000/api'; // Local development URL
 
 
 export const orderApi = createApi({
