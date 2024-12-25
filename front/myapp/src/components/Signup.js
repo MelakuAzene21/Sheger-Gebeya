@@ -5,7 +5,7 @@ import '../App.css';
 import Title from '../Layout/Title';
 
 const Signup = () => {
-    const [signup] = useSignupMutation();
+    const [signup ,{isLoading}] = useSignupMutation();
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
@@ -108,7 +108,7 @@ const Signup = () => {
                 />
 
                 <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded">
-                    Signup
+                    {isLoading ? 'Registering...' : 'Register'}
                 </button>
 
                 <p className="font-bold mt-4">
