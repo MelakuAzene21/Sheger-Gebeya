@@ -48,6 +48,13 @@ export const authApi = createApi({
         }
       },
     }),
+    logout: builder.mutation({
+      query: () => ({
+        url: '/auth/logout',
+        method: 'POST',
+      }),
+      invalidatesTags: ['User'],  // Invalidate 'User' tag on logout
+    }),
     getCurrentUser: builder.query({
       query: () => '/auth/profile',
       providesTags: ['User'], 
@@ -100,14 +107,7 @@ export const authApi = createApi({
       query: () => '/users',  // This assumes your backend has a /profile endpoint for current user info
      providesTags:['User']
     }),
-    logout: builder.mutation({
-      query: () => ({
-        url: '/auth/logout',
-        method: 'POST',
-      }),
-      invalidatesTags: ['User'],  // Invalidate 'User' tag on logout
-    }),
-
+    
     getAllProducts: builder.query({
       query: ({ page = 1, limit = 5, keyword = '', category = '', brand = '', minPrice = '', maxPrice = '', inStock = '' }) => ({
         url: `/products/item`,

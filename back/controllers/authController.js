@@ -54,15 +54,19 @@ exports.loginUser = async (req, res) => {
     }
 }; 
  
-exports.logout=async(req,res)=>{
+exports.logout = async (req, res) => {
     if (req.cookies.token) {
-      res.cookie("token","")
-       res.json("Successfully Logout ,You can login again to access  the PROFILE  ");
+        res.clearCookie('token', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production', // Ensure this for production
+            sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Strict',//dynamically assign 
+        });
+        res.status(200).json({ message: "Successfully logged out" });
+    } else {
+        res.status(400).json({ message: "No active session found. Please log in first." });
     }
-   else{
-res.json("You have first Login");
-   }
-}
+};
+ 
 
 exports.getUserProfile = async (req, res) => {
     const user = await User.findById(req.user._id);

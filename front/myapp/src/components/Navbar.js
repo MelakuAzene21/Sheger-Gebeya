@@ -163,15 +163,17 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useGetCurrentUserQuery, useLogoutMutation } from '../features/api/authApi';
 import SideBar from '../pages/SideBar';
-
+import { useDispatch } from 'react-redux';
+import logout from '../features/api/authSlice'
 const Navbar = () => {
     const { cartItems } = useSelector((state) => state.cart);
     const user = useSelector((state) => state.auth.user);
     const { error, isLoading } = useGetCurrentUserQuery();
-    const [logout] = useLogoutMutation();
+    const [logoutUser] = useLogoutMutation();
     const navigate = useNavigate();
     const distinctItemsCount = cartItems.length;
     const [wishlistCount, setWishlistCount] = useState(0);
+    const dispatch=useDispatch();
     const BASE_URL =
         process.env.NODE_ENV === 'production'
             ? 'https://e-market-fnu1.onrender.com'
@@ -204,7 +206,9 @@ const Navbar = () => {
 
     const handleLogout = async () => {
         try {
-            await logout().unwrap();
+            await logoutUser().unwrap();
+            dispatch(logout()); // Reset Redux state
+
             navigate('/');
         } catch (err) {
             console.error('Logout failed:', err);
