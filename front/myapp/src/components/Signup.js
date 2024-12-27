@@ -3,7 +3,7 @@ import { useSignupMutation } from '../features/api/authApi';
 import { useNavigate, Link } from 'react-router-dom';
 import '../App.css';
 import Title from '../Layout/Title';
-
+import Spinner from '../Layout/Spinner'
 const Signup = () => {
     const [signup ,{isLoading}] = useSignupMutation();
     const navigate = useNavigate();
@@ -108,7 +108,7 @@ const Signup = () => {
                 />
 
                 <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded">
-                    {isLoading ? 'Registering...' : 'Register'}
+                    {isLoading ? <Spinner/>: 'Register'}
                 </button>
 
                 <p className="font-bold mt-4">

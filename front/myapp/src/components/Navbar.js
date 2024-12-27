@@ -219,24 +219,111 @@ const Navbar = () => {
         return <div>Loading...</div>;
     }
 
+    // return (
+    //     <nav className="bg-gray-950 shadow-md p-4 flex flex-col md:flex-row justify-between items-center fixed top-0 w-full z-50 text-white">
+    //         {/* Show E-Market, SideBar, Cart, and Wishlist only if the user's role is 'user' */}
+    //         <SideBar />
+    //         {user?.role === 'user' && (
+    //             <div className="flex items-center space-x-4">
+                   
+    //                 <Link to="/" className="text-2xl font-bold text-blue-500 hover:text-blue-400 transition duration-300">
+    //                     E-Market
+    //                 </Link> 
+    //             </div>
+    //         )}
+
+    //         <div className="flex items-center space-x-4 mt-4 md:mt-0">
+    //             {user?.role === 'user' && (
+    //                 <>
+    //                     <div className="relative">
+    //                         <Link to="/cart" className="text-3xl hover:text-yellow-400 transition duration-300" title="Your Cart">
+    //                             🛒
+    //                         </Link>
+    //                         {distinctItemsCount > 0 && (
+    //                             <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+    //                                 {distinctItemsCount}
+    //                             </span>
+    //                         )}
+    //                     </div>
+
+    //                     <div className="relative">
+    //                         <button
+    //                             title="WishList"
+    //                             onClick={() => navigate('/wishlist')}
+    //                             className="text-3xl hover:text-yellow-400 transition duration-300"
+    //                         >
+    //                             ❤️
+    //                         </button>
+    //                         {wishlistCount > 0 && (
+    //                             <span className="absolute -top-1.5 -right-1.5 bg-green-500 text-white text-xs font-semibold rounded-full w-5 h-5 flex items-center justify-center">
+    //                                 {wishlistCount}
+    //                             </span>
+    //                         )}
+    //                     </div>
+    //                 </>
+    //             )}
+
+    //             {user ? (
+    //                 <>
+    //                     <span className="mr-4 flex items-center text-blue-400">
+    //                         <Link to="/profile" title={user.name} className="flex items-center space-x-2">
+    //                             {user.image ? (
+    //                                 <img
+    //                                     src={user.image}
+    //                                     alt="User profile"
+    //                                     className="w-8 h-8 rounded-full" // Adjust size as needed
+    //                                 />
+    //                             ) : (
+    //                                 <svg
+    //                                     xmlns="http://www.w3.org/2000/svg"
+    //                                     className="w-8 h-8 rounded-full bg-gray-200 text-gray-500"
+    //                                     fill="currentColor"
+    //                                     viewBox="0 0 24 24">
+    //                                     <path d="M12 12c2.75 0 5-2.25 5-5s-2.25-5-5-5-5 2.25-5 5 2.25 5 5 5zm0 2c-3.33 0-10 1.67-10 5v3h20v-3c0-3.33-6.67-5-10-5z" />
+    //                                 </svg>
+    //                             )}
+    //                         </Link>
+    //                     </span>
+
+    //                     <button
+    //                         onClick={handleLogout}
+    //                         className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
+    //                     >
+    //                         Logout
+    //                     </button>
+    //                 </>
+    //             ) : (
+    //                 <>
+    //                     <Link to="/login" className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-900 mx-2 transition duration-300">
+    //                         Login
+    //                     </Link>
+    //                     <Link to="/signup" className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-900 transition duration-300">
+    //                         Signup
+    //                     </Link>
+    //                 </>
+    //             )}
+    //         </div>
+    //     </nav>
+    // );
+
+
     return (
         <nav className="bg-gray-950 shadow-md p-4 flex flex-col md:flex-row justify-between items-center fixed top-0 w-full z-50 text-white">
-            {/* Show E-Market, SideBar, Cart, and Wishlist only if the user's role is 'user' */}
-            <SideBar />
-            {user?.role === 'user' && (
-                <div className="flex items-center space-x-4">
-                   
-                    <Link to="/" className="text-2xl font-bold text-blue-500 hover:text-blue-400 transition duration-300">
-                        E-Market
-                    </Link> 
-                </div>
-            )}
+            {/* Brand and Sidebar */}
+            <div className="flex items-center justify-between w-full md:w-auto">
+                <SideBar />
+                {/* <Link to="/" className="text-2xl font-bold text-blue-500 hover:text-blue-400 transition duration-300">
+                    E-Market
+                </Link> */}
+            </div>
 
-            <div className="flex items-center space-x-4 mt-4 md:mt-0">
+            {/* Cart, Wishlist, and Profile */}
+            <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6 mt-4 md:mt-0 w-full md:w-auto justify-center md:justify-end">
                 {user?.role === 'user' && (
                     <>
+                        {/* Cart Icon */}
                         <div className="relative">
-                            <Link to="/cart" className="text-3xl hover:text-yellow-400 transition duration-300" title="Your Cart">
+                            <Link to="/cart" className="text-2xl md:text-3xl hover:text-yellow-400 transition duration-300" title="Your Cart">
                                 🛒
                             </Link>
                             {distinctItemsCount > 0 && (
@@ -246,16 +333,17 @@ const Navbar = () => {
                             )}
                         </div>
 
+                        {/* Wishlist Icon */}
                         <div className="relative">
                             <button
-                                title="WishList"
+                                title="Wishlist"
                                 onClick={() => navigate('/wishlist')}
-                                className="text-3xl hover:text-yellow-400 transition duration-300"
+                                className="text-2xl md:text-3xl hover:text-yellow-400 transition duration-300"
                             >
                                 ❤️
                             </button>
                             {wishlistCount > 0 && (
-                                <span className="absolute -top-1.5 -right-1.5 bg-green-500 text-white text-xs font-semibold rounded-full w-5 h-5 flex items-center justify-center">
+                                <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
                                     {wishlistCount}
                                 </span>
                             )}
@@ -263,48 +351,48 @@ const Navbar = () => {
                     </>
                 )}
 
+                {/* User Profile and Logout */}
                 {user ? (
-                    <>
-                        <span className="mr-4 flex items-center text-blue-400">
-                            <Link to="/profile" title={user.name} className="flex items-center space-x-2">
-                                {user.image ? (
-                                    <img
-                                        src={user.image}
-                                        alt="User profile"
-                                        className="w-8 h-8 rounded-full" // Adjust size as needed
-                                    />
-                                ) : (
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        className="w-8 h-8 rounded-full bg-gray-200 text-gray-500"
-                                        fill="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path d="M12 12c2.75 0 5-2.25 5-5s-2.25-5-5-5-5 2.25-5 5 2.25 5 5 5zm0 2c-3.33 0-10 1.67-10 5v3h20v-3c0-3.33-6.67-5-10-5z" />
-                                    </svg>
-                                )}
-                            </Link>
-                        </span>
-
+                    <div className="flex items-center space-x-4">
+                        <Link to="/profile" className="flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition duration-300">
+                            {user.image ? (
+                                <img
+                                    src={user.image}
+                                    alt="User profile"
+                                    className="w-8 h-8 md:w-10 md:h-10 rounded-full"
+                                />
+                            ) : (
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="w-8 h-8 md:w-10 md:h-10 bg-gray-200 text-gray-500 rounded-full"
+                                    fill="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path d="M12 12c2.75 0 5-2.25 5-5s-2.25-5-5-5-5 2.25-5 5 2.25 5 5 5zm0 2c-3.33 0-10 1.67-10 5v3h20v-3c0-3.33-6.67-5-10-5z" />
+                                </svg>
+                            )}
+                        </Link>
                         <button
                             onClick={handleLogout}
                             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
                         >
                             Logout
                         </button>
-                    </>
+                    </div>
                 ) : (
-                    <>
-                        <Link to="/login" className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-900 mx-2 transition duration-300">
+                    <div className="flex space-x-4">
+                        <Link to="/login" className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-900 transition duration-300">
                             Login
                         </Link>
                         <Link to="/signup" className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-900 transition duration-300">
                             Signup
                         </Link>
-                    </>
+                    </div>
                 )}
             </div>
         </nav>
     );
+
 };
 
 export default Navbar;

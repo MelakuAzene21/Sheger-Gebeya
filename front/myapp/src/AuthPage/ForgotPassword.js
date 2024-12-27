@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import Title from '../Layout/Title';
-
+import Spinner from '../Layout/Spinner'
 const ForgotPassword = () => {
     const [email, setEmail] = useState('');
     const [message, setMessage] = useState('');
+    const [loading,setLoading]=useState(false)
     const BASE_URL =
         process.env.NODE_ENV === 'production'
             ? 'https://e-market-fnu1.onrender.com'
@@ -15,8 +16,10 @@ const ForgotPassword = () => {
         try {
             const response = await axios.post(`${BASE_URL}/api/auth/forgot-password`, { email });
             setMessage(response.data.message);
+            setLoading(false);
         } catch (error) {
             setMessage('Error: Unable to send reset email.');
+            setLoading(false);
         }
     };
 
@@ -37,8 +40,9 @@ const ForgotPassword = () => {
                 <button
                     type="submit"
                     className="w-full py-3 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300"
-                >
-                    Send Reset Link
+                    onClick={() => setLoading(!loading)}
+               >
+                    {loading ? <Spinner /> : 'Get Reset Link'}
                 </button>
                 <div className="text-center mt-4">
                     <p>Remembered your password? <Link to="/login" className="text-blue-600 hover:underline">Login</Link></p>

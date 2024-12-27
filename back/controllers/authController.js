@@ -66,7 +66,7 @@ exports.logout = async (req, res) => {
         res.status(400).json({ message: "No active session found. Please log in first." });
     }
 };
- 
+
 
 exports.getUserProfile = async (req, res) => {
     const user = await User.findById(req.user._id);
@@ -96,9 +96,12 @@ exports.forgotPassword = async (req, res) => {
     // Generate a reset token
     const resetToken = user.generatePasswordResetToken();
     await user.save({ validateBeforeSave: false });  // Save the token and expiration time
-
+    const BASE_URL =
+        process.env.NODE_ENV === 'production'
+            ? 'https://e-market-hbf7.onrender.com' // Production URL
+            : 'http://localhost:3000'; // Local development URL
     // Create reset URL
-    const resetUrl = `http://localhost:3000/reset-password/${resetToken}`;
+    const resetUrl = `${BASE_URL}/reset-password/${resetToken}`;
 
     
     try {

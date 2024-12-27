@@ -96,7 +96,7 @@ import { useDispatch } from 'react-redux';
 import { setUser } from '../features/api/authSlice';
 import { Link } from 'react-router-dom';
 import Title from '../Layout/Title';
-
+import Spinner from '../Layout/Spinner';
 const Login = () => {
   const [login, { isLoading }] = useLoginMutation();
   const dispatch = useDispatch();
@@ -165,7 +165,7 @@ const Login = () => {
           type="submit"
           className="w-full py-3 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300"
         >
-          {isLoading ? 'Logging in...' : 'Login'}
+          {isLoading ? <Spinner/> : 'Login'}
         </button>
         <div className="text-center mt-4">
           <p>Don't have an account? <Link to="/signup" className="text-blue-600 hover:underline">Sign Up</Link></p>
