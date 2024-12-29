@@ -1,168 +1,3 @@
-// import React, { useState } from 'react';
-// import { useAddProductMutation } from '../services/productsApi';
-// import toast from 'react-hot-toast';
-
-// const AddProduct = () => {
-//     // Initial form state
-//     const initialFormData = {
-//         name: '',
-//         description: '',
-//         price: '',
-//         brand: '',
-//         category: '',
-//         Stock: '',
-//         rating: '',
-//         numReviews: '',
-//         image: null,
-//     };
-
-//     // State to manage form data
-//     const [formData, setFormData] = useState(initialFormData);
-
-//     // Mutation hook for adding a product
-//     const [addProduct] = useAddProductMutation();
-
-//     // Handle input change
-//     const handleChange = (e) => {
-//         if (e.target.name === 'image') {
-//             setFormData({ ...formData, image: e.target.files[0] });
-//         } else {
-//             setFormData({ ...formData, [e.target.name]: e.target.value });
-//         }
-//     };
-
-//     // Handle form submission
-//     const handleSubmit = async (e) => {
-//         e.preventDefault();
-
-//         // Create FormData object to send form data including the image
-//         const newProduct = new FormData();
-//         Object.keys(formData).forEach((key) => {
-//             newProduct.append(key, formData[key]);
-//         });
-
-//         try {
-//             // Submit the form data via mutation
-//             await addProduct(newProduct).unwrap();
-
-           
-//             toast.success('Product added successfully!')
-//             // Clear the form by resetting the state to initial values
-//             setFormData(initialFormData);
-
-//             // Optionally clear the file input if required
-//             e.target.reset();
-//         } catch (error) {
-//             toast.error('Error Adding Products')
-//         }
-//     };
-
-//     return (
-//         <div className="max-w-md mx-auto mt-10">
-//             <h1 className="text-3xl font-semibold mb-6 text-center">Add New Product</h1>
-//             <form className="bg-white shadow-lg rounded px-8 pt-6 pb-8 mb-4" onSubmit={handleSubmit}>
-//                 <div className="mb-4">
-//                     <label className="block text-gray-700 text-sm font-bold mb-2">Product Name</label>
-//                     <input
-//                         type="text"
-//                         name="name"
-//                         value={formData.name}
-//                         onChange={handleChange}
-//                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
-//                         placeholder="Enter product name"
-//                         required
-//                     />
-//                 </div>
-
-//                 <div className="mb-4">
-//                     <label className="block text-gray-700 text-sm font-bold mb-2">Description</label>
-//                     <textarea
-//                         name="description"
-//                         value={formData.description}
-//                         onChange={handleChange}
-//                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
-//                         placeholder="Enter product description"
-//                         required
-//                     />
-//                 </div>
-
-//                 <div className="mb-4">
-//                     <label className="block text-gray-700 text-sm font-bold mb-2">Price</label>
-//                     <input
-//                         type="number"
-//                         name="price"
-//                         value={formData.price}
-//                         onChange={handleChange}
-//                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
-//                         placeholder="Enter product price"
-//                         required
-//                     />
-//                 </div>
-
-//                 {/* Additional form fields for brand, category, etc. */}
-//                 <div className="mb-4">
-//                     <label className="block text-gray-700 text-sm font-bold mb-2">Brand</label>
-//                     <input
-//                         type="text"
-//                         name="brand"
-//                         value={formData.brand}
-//                         onChange={handleChange}
-//                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
-//                         placeholder="Enter product brand"
-//                         required
-//                     />
-//                 </div>
-
-//                 <div className="mb-4">
-//                     <label className="block text-gray-700 text-sm font-bold mb-2">Category</label>
-//                     <input
-//                         type="text"
-//                         name="category"
-//                         value={formData.category}
-//                         onChange={handleChange}
-//                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
-//                         placeholder="Enter product category"
-//                         required
-//                     />
-//                 </div>
-
-//                 <div className="mb-4">
-//                     <label className="block text-gray-700 text-sm font-bold mb-2">Stock</label>
-//                     <input
-//                         type="number"
-//                         name="Stock"
-//                         value={formData.Stock}
-//                         onChange={handleChange}
-//                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
-//                         placeholder="Enter product stock"
-//                         required
-//                     />
-//                 </div>
-
-//                 <div className="mb-4">
-//                     <label className="block text-gray-700 text-sm font-bold mb-2">Image</label>
-//                     <input
-//                         type="file"
-//                         name="image"
-//                         onChange={handleChange}
-//                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
-//                         required
-//                     />
-//                 </div>
-
-//                 <button
-//                     type="submit"
-//                     className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-//                 >
-//                     Add Product
-//                 </button>
-//             </form>
-//         </div>
-//     );
-// };
-
-// export default AddProduct;
-
 import React, { useState } from 'react';
 import { useAddProductMutation } from '../services/productsApi';
 import toast from 'react-hot-toast';
@@ -235,7 +70,7 @@ const AddProduct = () => {
             } else {
                 newProduct.append(key, formData[key]);
             }
-        });
+        }); 
 
         // Submit the product
         try {
@@ -245,7 +80,10 @@ const AddProduct = () => {
             setImagePreviews([]);
             setMainImageIndex(0); // Reset main image index if necessary
         } catch (error) {
-            toast.error('Error adding product');
+
+            console.error('Error adding product:', error);
+            toast.error(`Failed to add product: ${error.response?.data?.message || error.message}`);
+
         }
     };
 
@@ -411,7 +249,7 @@ const AddProduct = () => {
                                 value={spec.name}
                                 onChange={(e) => handleSpecificationChange(index, 'name', e.target.value)}
                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
-                                required
+                                
                             />
                             <input
                                 type="text"
@@ -419,7 +257,7 @@ const AddProduct = () => {
                                 value={spec.value}
                                 onChange={(e) => handleSpecificationChange(index, 'value', e.target.value)}
                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
-                                required
+                                
                             />
                         </div>
                     ))}

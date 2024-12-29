@@ -4,15 +4,16 @@
 // const path = require('path');
 // const router = express.Router();
 // const { protect, admin } = require('../middleware/authMiddleware');
-// const Product = require('../models/Product');
 
-// // Set up multer for file storage
+// const Product = require('../models/Product')
+
 // const storage = multer.diskStorage({
 //     destination: function (req, file, cb) {
 //         cb(null, 'uploads/'); // Folder where images will be stored
 //     },
 //     filename: function (req, file, cb) {
-//         cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`);
+//         const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
+//         cb(null, `${file.fieldname}-${uniqueSuffix}${path.extname(file.originalname)}`);
 //     }
 // });
 
@@ -25,20 +26,24 @@
 //     if (extname && mimetype) {
 //         return cb(null, true);
 //     } else {
-//         cb('Images only!');
+//         cb('Images only!'); // If not a valid image file, send an error
 //     }
 // };
 
-// // Initialize multer
+// // Initialize multer to handle multiple images
 // const upload = multer({
 //     storage,
 //     limits: { fileSize: 1000000 }, // 1MB file size limit
 //     fileFilter
 // });
 
-// // POST route to add a product (with image upload)
-// router.post('/add', protect, admin, upload.single('image'), async (req, res) => {
+// // POST route to add a product (with multiple image uploads)
+// router.post('/add', protect,  upload.array('images', 5), async (req, res) => {
 //     try {
+//         // Check if the user is authorized to add products
+//         if (req.user.role !== 'admin' && req.user.role !== 'subAdmin') {
+//             return res.status(403).json({ message: 'Access denied. Only admins and subAdmins can add products.' });
+//         }
 //         const {
 //             name,
 //             description,
@@ -47,81 +52,87 @@
 //             category,
 //             Stock,
 //             rating,
-//             numReviews
+//             numReviews,
+//             specifications
 //         } = req.body;
 
-//         const image = req.file ? `/uploads/${req.file.filename}` : null; // Save image path
+//         // If no files are uploaded, return an error
+//         if (!req.files || req.files.length === 0) {
+//             return res.status(400).json({ message: 'No images uploaded' });
+//         }
+
+//         // Save all uploaded image paths to an array
+//         // Fix: Use template literals for the correct image paths
+//         const images = req.files.map(file => `/uploads/${file.filename}`);
+//         const parsedSpecifications = JSON.parse(specifications);
 
 //         const newProduct = new Product({
 //             name,
 //             description,
 //             price,
-//             image, // Store image path
+//             images, // Save image paths array
 //             brand,
 //             category,
 //             Stock,
 //             rating,
-//             numReviews
+//             numReviews,
+//             specifications: parsedSpecifications ,// Save parsed specifications
+//             addedBy: req.user.id // Store the user ID
+
 //         });
 
 //         const savedProduct = await newProduct.save();
 //         res.status(201).json(savedProduct);
 //     } catch (error) {
-//         res.status(500).json({ message: 'Error adding product', error });
+//         console.error('Error adding product:', error); // Log the error
+//         res.status(500).json({ message: 'Error adding product', error: error.message });
 //     }
 // });
 
 
-
-
-
-
-// routes/product.js
 const express = require('express');
 const multer = require('multer');
-const path = require('path');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('cloudinary').v2;
 const router = express.Router();
-const { protect, admin } = require('../middleware/authMiddleware');
+const { protect } = require('../middleware/authMiddleware');
+const Product = require('../models/Product');
+const dotenv = require('dotenv');
 
-const Product = require('../models/Product')
+dotenv.config();
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/'); // Folder where images will be stored
-    },
-    filename: function (req, file, cb) {
-        const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
-        cb(null, `${file.fieldname}-${uniqueSuffix}${path.extname(file.originalname)}`);
-    }
+// Configure Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// File filter to allow only images
-const fileFilter = (req, file, cb) => {
-    const allowedTypes = /jpeg|jpg|png/;
-    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = allowedTypes.test(file.mimetype);
-
-    if (extname && mimetype) {
-        return cb(null, true);
-    } else {
-        cb('Images only!'); // If not a valid image file, send an error
-    }
-};
-
-// Initialize multer to handle multiple images
-const upload = multer({
-    storage,
-    limits: { fileSize: 1000000 }, // 1MB file size limit
-    fileFilter
+// Configure Multer to use Cloudinary Storage
+const storage = new CloudinaryStorage({
+    cloudinary,
+    params: {
+        folder: 'products', // Folder name in Cloudinary
+        allowed_formats: ['jpeg', 'jpg', 'png'], // Restrict file formats
+        public_id: (req, file) => `${Date.now()}-${file.originalname}`, // Custom public ID
+    }, 
 });
+  
+// Initialize multer
+const upload = multer({ storage });
 
 // POST route to add a product (with multiple image uploads)
-router.post('/add', protect,  upload.array('images', 5), async (req, res) => {
+router.post('/add', protect, upload.array('images', 5), async (req, res) => {
     try {
+        console.log('Request Body:', req.body);
+        console.log('Uploaded Files:', req.files);
+
         // Check if the user is authorized to add products
         if (req.user.role !== 'admin' && req.user.role !== 'subAdmin') {
             return res.status(403).json({ message: 'Access denied. Only admins and subAdmins can add products.' });
         }
+
+        // Validate input fields
         const {
             name,
             description,
@@ -131,41 +142,59 @@ router.post('/add', protect,  upload.array('images', 5), async (req, res) => {
             Stock,
             rating,
             numReviews,
-            specifications
+            specifications,
         } = req.body;
 
-        // If no files are uploaded, return an error
+        if (!name || !description || !price || !category || !Stock) {
+            return res.status(400).json({ message: 'Missing required fields' });
+        }
+
+        // Check if files were uploaded
         if (!req.files || req.files.length === 0) {
             return res.status(400).json({ message: 'No images uploaded' });
         }
 
-        // Save all uploaded image paths to an array
-        // Fix: Use template literals for the correct image paths
-        const images = req.files.map(file => `/uploads/${file.filename}`);
-        const parsedSpecifications = JSON.parse(specifications);
+        // Extract the image URLs from the uploaded files
+        const images = req.files.map((file) => file.path); // Cloudinary URLs
 
+        // Parse specifications if provided
+        let parsedSpecifications = {};
+        if (specifications) {
+            try {
+                parsedSpecifications = JSON.parse(specifications);
+            } catch (error) {
+                return res.status(400).json({ message: 'Invalid specifications format. It should be a valid JSON string.' });
+            }
+        }
+
+        // Create a new product
         const newProduct = new Product({
             name,
             description,
             price,
-            images, // Save image paths array
+            images, // Save Cloudinary URLs
             brand,
             category,
             Stock,
-            rating,
-            numReviews,
-            specifications: parsedSpecifications ,// Save parsed specifications
-            addedBy: req.user.id // Store the user ID
-
+            rating: rating || 0,
+            numReviews: numReviews || 0,
+            specifications: parsedSpecifications, // Save parsed specifications
+            addedBy: req.user.id, // Store the user ID
         });
 
+        // Save the product to the database
         const savedProduct = await newProduct.save();
         res.status(201).json(savedProduct);
     } catch (error) {
-        console.error('Error adding product:', error); // Log the error
+        console.error('Error adding product:', error.message); // Log the error
         res.status(500).json({ message: 'Error adding product', error: error.message });
     }
 });
+
+
+
+
+
 
 
 // Update product route

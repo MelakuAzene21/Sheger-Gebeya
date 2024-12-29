@@ -53,9 +53,13 @@ const productSchema = mongoose.Schema(
         },
         specifications: [
             {
-                name: { type: String, required: true },
-                value: { type: String, required: true }
-            }
+                name: {
+                    type: String, required: false,
+},
+                value: {
+                    type: String, required: false,
+}
+            }, 
         ],
          user: {
              type: mongoose.Schema.Types.ObjectId,
@@ -71,7 +75,7 @@ const productSchema = mongoose.Schema(
     {
         timestamps: true,
     }
-);
+); 
 
 const Product = mongoose.model('Product', productSchema);
 

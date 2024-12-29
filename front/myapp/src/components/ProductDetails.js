@@ -428,7 +428,7 @@ const ProductDetails = () => {
             <div className="flex flex-col md:flex-row bg-gray-500 shadow-lg rounded-lg overflow-hidden">
                 <div className="md:w-1/2 p-4 relative">
                     <img
-                        src={`${BASE_URL}${product.images[selectedImageIndex]}`}
+                        src={product.images[selectedImageIndex]}
                         alt={product.name}
                         className="w-full h-[500px] object-cover rounded-lg hover:scale-105 transition-transform duration-300"
                     />
@@ -485,7 +485,7 @@ const ProductDetails = () => {
 
                             {/* Display the current image in fullscreen */}
                             <img
-                                src={`${BASE_URL}${product.images[selectedImageIndex]}`}
+                                src={product.images[selectedImageIndex]}
                                 alt="Fullscreen"
                                 className="w-auto h-full object-contain"
                             />
@@ -506,7 +506,7 @@ const ProductDetails = () => {
                         {product.images.map((image, index) => (
                             <img
                                 key={index}
-                                src={`${BASE_URL}${image}`}
+                                src={image}
                                 alt={`Preview ${index + 1}`}
                                 className={`w-20 h-20 object-cover cursor-pointer rounded-md ${index === selectedImageIndex ? 'ring-2 ring-blue-500' : ''}`}
                                 onClick={() => setSelectedImageIndex(index)}

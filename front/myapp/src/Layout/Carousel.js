@@ -53,7 +53,7 @@ const Carousel = () => {
               <div className="carousel-item w-full flex flex-col items-center justify-center h-full">
                 <img
                   className="object-cover h-80 w-full"
-                    src={`${BASE_URL}${products[currentIndex].images[0]}`}
+                    src={products[currentIndex].images[0]}
                   alt={products[currentIndex].name}
                 />
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 p-4">

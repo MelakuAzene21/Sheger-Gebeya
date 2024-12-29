@@ -538,11 +538,19 @@ const ProductsPage = () => {
                             className="bg-white border border-gray-300 rounded-lg shadow-xl overflow-hidden transform transition-all hover:scale-105"
                         >
                             <Link to={`/products/${product._id}`} >                           
-                            <img
+                            {/* <img
                                 src={`${BASE_URL}${product.images[0]}`}
                                 alt={product.name}
                                 className="w-full h-56 object-cover"
-                            />
+                            /> */}
+
+                                <img
+                                    // Use the Cloudinary URL directly from `product.images[0]`
+                                    src={product.images[0]}
+                                    alt={product.name}
+                                    className="w-full h-56 object-cover"
+                                />
+
 
                             </Link> 
                             <button
