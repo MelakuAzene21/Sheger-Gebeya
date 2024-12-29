@@ -655,7 +655,7 @@ const ProductDetails = () => {
                                 className="bg-white border border-gray-200 rounded-lg shadow-lg"
                             >
                                 <Link to={`/products/${relatedProduct._id}`}> <img
-                                    src={`${BASE_URL}${relatedProduct.images[0]}`}
+                                    src={relatedProduct.images[0]}
                                     alt={relatedProduct.name}
                                     className="w-full h-48 object-cover"
                                 /></Link>
@@ -713,7 +713,7 @@ const ProductDetails = () => {
                             >
                                 <Link to={`/products/${relatedProductBrand._id}`}>
                                     <img
-                                        src={`${BASE_URL}${relatedProductBrand.images[0]}`}
+                                        src={relatedProductBrand.images[0]}
                                         alt={relatedProductBrand.name}
                                         className="w-full h-48 object-cover"
                                     />

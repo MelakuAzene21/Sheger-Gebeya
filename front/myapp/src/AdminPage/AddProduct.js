@@ -170,16 +170,26 @@ const AddProduct = () => {
 
                 <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">Category</label>
-                    <input
-                        type="text"
+                    <select
                         name="category"
                         value={formData.category}
                         onChange={handleChange}
                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
-                        placeholder="Enter product category"
                         required
-                    />
+                    >
+                        <option value="" disabled>Select a category</option>
+                        
+                        <option value="Electronics">Electronics</option>
+                        <option value="camera">Camera</option>
+                        <option value="Home">Home</option>
+                        <option value="Computer">Computer</option>
+                        <option value="Techono">Techno</option>
+                        <option value="Wearable">Wearable</option>
+                        <option value="charger">Charger</option>
+
+                    </select>
                 </div>
+
 
                 <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2">Stock</label>

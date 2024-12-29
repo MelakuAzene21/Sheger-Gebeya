@@ -122,7 +122,7 @@ const ShippingInfo = () => {
                             cartItems.map((item) => (
                                 <div key={item._id} className="flex justify-between mb-4">
                                     <div className="flex">
-                                        <img src={`${BASE_URL}${item.images[0]}`} alt={item.name} className="w-16 h-16 object-cover rounded-lg mr-4" />
+                                        <img src={item.images[0]} alt={item.name} className="w-16 h-16 object-cover rounded-lg mr-4" />
                                         <p>{item.name}</p>
                                     </div>
                                     <p>{item.quantity} x ${item.price} = ${item.quantity * item.price}</p>

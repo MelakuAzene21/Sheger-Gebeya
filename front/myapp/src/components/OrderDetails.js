@@ -69,7 +69,7 @@ const OrderDetails = () => {
                         <div key={item.product} className="flex items-center justify-between py-4">
                             <div className="flex items-center space-x-4">
                                 <img
-                                    src={`${BASE_URL}${item.images[0]}`}
+                                    src={item.images[0]}
                                     alt={item.name}
                                     className="w-16 h-16 rounded-lg object-cover"
                                 />

@@ -59,11 +59,13 @@ const WishlistPage = () => {
                 <div className="flex flex-col space-y-4">
                     {wishlistItems.map((item) => (
                         <div key={item._id} className="flex items-center border rounded-lg shadow-md p-4">
-                            <img
-                                src={`${baseUrl}${item.itemId.images[0]}`}
+                            <Link to={`/products/${item.itemId._id}`}><img
+                                src={item.itemId.images[0]}
                                 alt={item.itemId.name}
                                 className="w-24 h-24 object-cover rounded mr-4"
-                            />
+                            /></Link>
+                            
+                            
                             <div className="flex-1">
                                 <h2 className="text-lg font-semibold">{item.itemId.name}</h2>
                                 <p className="text-gray-600">Price: {item.itemId.price} ETB</p>
