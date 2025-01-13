@@ -44,7 +44,6 @@ const OrderDetails = () => {
                     <p className="text-gray-600"><span className="font-semibold">Name:</span> {user.name}</p> {/* Display fetched user name */}
                     <p className="text-gray-600"><span className="font-semibold">Phone:</span>  {order.shippingAddress.phoneNumber}</p>
                     <p className="text-gray-600"><span className="font-semibold">Address:</span> {order.shippingAddress.address}, {order.shippingAddress.city}, {order.shippingAddress.zipCode}</p>
-                    <p className="text-gray-600"><span className="font-semibold">Country:</span> {order.shippingAddress.country}</p>
                 </div>
             </div>
 
