@@ -89,10 +89,9 @@ const ShippingInfo = () => {
         } catch (error) {
             console.error('Error initializing payment', error);
             toast.error('Error initializing payment. Please try again.');
-        } finally {
-            setLoading(false);
             setShowOverlay(false); // Hide the overlay after payment initialization
-        }
+
+        } 
     };
 
     return (
@@ -102,7 +101,11 @@ const ShippingInfo = () => {
             {/* Full-page overlay */}
             {showOverlay && (
                 <div className="overlay">
-                    <ClipLoader size={50} color="#ffffff" /> {/* Spinner inside the overlay */}
+                    {/* <ClipLoader size={50} color="#ffffff" /> Spinner inside the overlay */}
+                    <div className="spinner-container">
+                        <div className="spinner"></div> {/* Custom spinner */}
+                        <p className="overlay-message"> Please wait....</p>
+                    </div>
                 </div>
             )}
 
