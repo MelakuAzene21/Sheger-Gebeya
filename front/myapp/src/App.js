@@ -141,9 +141,9 @@ function App() {
             
       </div>
 
-      {user2?.role==='user'&&(
-      <Footer/>
-      )}
+         {(!user2 || user2?.role !== 'admin') && (
+           <Footer />
+         )}
   </div>
     </Router>
     
