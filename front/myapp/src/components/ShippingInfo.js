@@ -63,27 +63,39 @@ const ShippingInfo = () => {
 
             // Only proceed if order creation is successful
             if (result) {
-                const paymentData = {
-                    amount: total,
-                    currency: 'ETB',
-                    email: userDetails.email,
-                    firstName: userDetails.name,
-                    lastName: userDetails.name,
-                    tx_ref: transactionRef,
-                };
+                if (paymentMethod === 'Chapa') {
+                    const paymentData = {
+                        amount: total,
+                        currency: 'ETB',
+                        email: userDetails.email,
+                        firstName: userDetails.name,
+                        lastName: userDetails.name,
+                        tx_ref: transactionRef,
+                    };
 
-                const response = await axios.post(`${BASE_URL}/payment/initialize`,paymentData, {
-                    withCredentials: true,
-                });
-                if (response.data && response.data.payment_url) {
-                    setPaymentUrl(response.data.payment_url);
-                    console.log('Redirecting to payment URL:', response.data.payment_url);
-                    window.location.href = response.data.payment_url;
+                    const response = await axios.post(`${BASE_URL}/payment/initialize`, paymentData, {
+                        withCredentials: true,
+                    });
+                    if (response.data && response.data.payment_url) {
+                        setPaymentUrl(response.data.payment_url);
+                        window.location.href = response.data.payment_url;
+                        dispatch(emptyCart());
+                    } else {
+                        throw new Error('Payment URL not received');
+                    }
+                } else if (paymentMethod === 'Stripe') {
+                    const response = await axios.post(`${BASE_URL}/payment/stripe/create-checkout-session`, {
+                        items: cartItems,
+                        customerEmail: userDetails.email,
+                        tx_ref: transactionRef,
+                    }, { withCredentials: true });
 
-                    // Empty the cart after redirecting to the payment page
-                    dispatch(emptyCart());
-                } else {
-                    throw new Error('Payment URL not received');
+                    if (response.data && response.data.url) {
+                        window.location.href = response.data.url;
+                        dispatch(emptyCart());
+                    } else {
+                        throw new Error('Stripe session URL not received');
+                    }
                 }
             }
         } catch (error) {
@@ -144,6 +156,32 @@ const ShippingInfo = () => {
                     <p>Shipping Price: ${shippingPrice.toFixed(2)}</p>
                     <p>Tax: ${taxPrice.toFixed(2)}</p>
                     <p><strong>Total: ${total.toFixed(2)}</strong></p>
+
+                    <div className="mt-4">
+                        <h3 className="text-lg font-semibold mb-2">Select Payment Method</h3>
+                        <div className="flex items-center mb-2">
+                            <input
+                                type="radio"
+                                id="chapa"
+                                name="paymentMethod"
+                                value="Chapa"
+                                checked={paymentMethod === 'Chapa'}
+                                onChange={(e) => setPaymentMethod(e.target.value)}
+                            />
+                            <label className="ml-2" htmlFor="chapa">Chapa</label>
+                        </div>
+                        <div className="flex items-center">
+                            <input
+                                type="radio"
+                                id="stripe"
+                                name="paymentMethod"
+                                value="Stripe"
+                                checked={paymentMethod === 'Stripe'}
+                                onChange={(e) => setPaymentMethod(e.target.value)}
+                            />
+                            <label className="ml-2" htmlFor="stripe">Stripe</label>
+                        </div>
+                    </div>
 
                     <button
                         onClick={handlePayment}

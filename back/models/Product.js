@@ -69,7 +69,7 @@ const productSchema = mongoose.Schema(
         addedBy: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User', // Reference to the user who added the product
-            required: true
+            required: false
         }
     },
     {

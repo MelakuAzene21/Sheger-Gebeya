@@ -2,6 +2,8 @@ const express = require('express');
 const axios = require('axios');
 const dotenv = require('dotenv');
 const Order = require('../models/orderModel');
+// Lazy-load Stripe with secret key from env
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY || '');
 // Load environment variables
 dotenv.config();
 // Determine the base URL based on the environment
@@ -9,6 +11,53 @@ const baseUrl = process.env.NODE_ENV === 'production'
     ? 'https://e-market-hbf7.onrender.com'
     : 'http://localhost:3000';
 const router = express.Router();
+
+// STRIPE CHECKOUT: Create Checkout Session
+router.post('/stripe/create-checkout-session', async (req, res) => {
+    try {
+        const { items, customerEmail, tx_ref } = req.body;
+
+        if (!Array.isArray(items) || items.length === 0) {
+            return res.status(400).json({ message: 'No items provided for checkout' });
+        }
+
+        if (!customerEmail || !customerEmail.includes('@')) {
+            return res.status(400).json({ message: 'Valid customerEmail is required' });
+        }
+
+        if (!process.env.STRIPE_SECRET_KEY) {
+            return res.status(500).json({ message: 'Stripe is not configured. Missing STRIPE_SECRET_KEY.' });
+        }
+
+        const line_items = items.map((item) => ({
+            price_data: {
+                currency: 'usd',
+                product_data: {
+                    name: item.name,
+                },
+                unit_amount: Math.round(Number(item.price) * 100),
+            },
+            quantity: Number(item.quantity) || 1,
+        }));
+
+        const session = await stripe.checkout.sessions.create({
+            mode: 'payment',
+            payment_method_types: ['card'],
+            customer_email: customerEmail,
+            line_items,
+            success_url: `${baseUrl}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${baseUrl}/payment-cancelled`,
+            metadata: {
+                tx_ref: tx_ref || '',
+            },
+        });
+
+        return res.status(200).json({ url: session.url });
+    } catch (error) {
+        console.error('Error creating Stripe checkout session:', error);
+        return res.status(500).json({ message: 'Failed to create Stripe checkout session', error: error.message });
+    }
+});
 
 router.post('/initialize', async (req, res) => {
     try {
