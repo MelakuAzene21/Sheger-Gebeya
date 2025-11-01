@@ -90,7 +90,7 @@ Ecommerce-MERN/
 ### Prerequisites
 - Node.js (v14 or higher)
 - MongoDB (local or MongoDB Atlas)
-- npm or yarn package manager
+- npm  package manager
 
 ### Backend Setup
 
